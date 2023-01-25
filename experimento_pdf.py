@@ -1,8 +1,8 @@
-import PyPDF2
+from PyPDF2 import PdfReader
 import re
 
 def contador_de_palabras(file_name: str,search: str):    
-    doc = PyPDF2.PdfReader(file_name)
+    doc = PdfReader(file_name)
     #Numero de paginas
     pages = len(doc.pages)
     #lista de tuplas (ocurrencias, numero de pagina)
@@ -20,10 +20,21 @@ def contador_de_palabras(file_name: str,search: str):
     #total de palabras contadas 
     total = sum([tup[0] for tup in list_pages])
     return(total,count)  
+def contador_imagenes(file_name:str):
+    reader = PdfReader(file_name)
+    page = reader.pages[0]
+    count = 0
 
+    for image_file_object in page.images:
+        with open(str(count) + image_file_object.name, "wb") as fp:
+            fp.write(image_file_object.data)
+            count += 1
+    return count
 #elegir archivo
-file_name = "RBD 25198 - INFORME FINAL FASE 1 - ASESORÍA DISEÑO DE RED - AULAS CONECTADAS 2022.pdf"
+file_name = "informeFinal5393.pdf"
 #Buscar un termino
 search = 'RESUMEN'
 result= contador_de_palabras(file_name,search)
+cont_im= contador_imagenes(file_name)
 print(f"la palabra '{search}' fuen encontrada un total de {result[0]} veces en {result[1]} paginas.")
+#print(f"La cantidad de imagenes son {cont_im}")
