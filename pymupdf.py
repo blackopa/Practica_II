@@ -4,22 +4,6 @@ import os
 import io
 from PIL import Image
 
-def Datos_pagina(file_name,paginas):
-    datos_paginas=[]
-    doc= fitz.open(file_name)
-    for i in paginas:
-        numero=i-1  
-        page= doc.load_page(numero) #pagina que se quiere revisar del informe
-        text = page.get_text("text")
-        palabra=""
-        for i in range(len(text)):
-            if text[i]=='\n':
-                datos_paginas.append(palabra)
-                palabra=""
-            else: 
-                palabra+=text[i]
-    return(datos_paginas)
-
 def extraer_tabla_variable(resultado,limite):
     count=0
     a=[]
@@ -63,19 +47,61 @@ def extraer_imagen(file_name,num_pag):
     return
 #enlaces=text[50]
 #print(enlaces)
-f_list = os.listdir("./InformesPdf/Diciembre_adelante")
-file_name="./InformesPdf/Diciembre_adelante/%s"%(f_list[1])
+
+class Datos_pagina:
+    def __init__(self,i,paginas,f_list):
+        self.paginas=[13,43,44,45,46,47,48,49]
+        self.file_name="./InformesPdf/Diciembre_adelante/%s"%(f_list[i])
+    
+    def Ordena_Datos(self):
+        self.datos_orden=[]
+        doc= fitz.open(self.file_name)
+        for i in self.paginas:
+            numero=i-1  
+            page= doc.load_page(numero) #pagina que se quiere revisar del informe
+            text = page.get_text("text")
+            contenido=""#contenido dentro de la celda
+            for i in range(len(text)):
+                if text[i]=='\n':
+                    self.datos_orden.append(contenido)
+                    contenido=""
+                else: 
+                    contenido+=text[i]
+        #return(datos_orden)
+    def Tablas(self):
+        self.Actividad_asesoria=self.datos_orden[:9]
+        self.Elementos_red=self.datos_orden[12:18]
+        self.Tramos_canalización=self.datos_orden[25:46]
+        self.Cables=self.datos_orden[49:53]
+        self.Enlaces_existentes=extraer_tabla_variable(self.datos_orden,56)
+        self.Rack_existentes=extraer_tabla_variable(self.datos_orden,self.Enlaces_existentes[1]+3)
+        self.Rack_proyectados=extraer_tabla_variable(self.datos_orden,self.Rack_existentes[1]+3)
+        self.Puntos_Proyectados=extraer_tabla_variable(self.datos_orden,self.Rack_proyectados[1]+3)
+        self.Tramos_Proyectados=extraer_tabla_variable(self.datos_orden,self.Puntos_Proyectados[1]+3)
+        print("listo")
+
+f_list = os.listdir("./InformesPdf/Diciembre_adelante")#lista de archivos en esa carpeta
+#f_list = filter(lambda f: f.endswith(('.pdf','.PDF')), f_list)#filtra la lista para que solo sean pdf}
+
+#file_name="./InformesPdf/Diciembre_adelante/%s"%(f_list[1])
 paginas=[13,43,44,45,46,47,48,49]
-resultado=Datos_pagina(file_name, paginas)
+for i in range(len(f_list)):
+    resultado=Datos_pagina(i,paginas,f_list)
+    resultado.Ordena_Datos()
+    resultado.Tablas()
+    #tramos_p=resultado.Tramos_Proyectados
+    #print(tramos_p)
+
+#resultado=Datos_pagina(file_name, paginas)
 ###########Datos de las paginas############
 #print(resultado[:9])
-Actividad_asesoria=resultado[:9]
+#Actividad_asesoria=resultado[:9]
 #print(Actividad_asesoria)
-Elementos_red=resultado[12:18]
+#Elementos_red=resultado[12:18]
 #print(Elementos_red)
-Tramos_canalización=resultado[25:46]
+#Tramos_canalización=resultado[25:46]
 #print(Tramos_canalización)
-Cables=resultado[49:53]
+#Cables=resultado[49:53]
 #print(Cables)
 ###########Datos de las Tablas############
 #Enlaces_existentes=extraer_tabla_variable(resultado,56)
@@ -98,4 +124,4 @@ Cables=resultado[49:53]
 #print(Tramos_Proyectados[0])
 #print(Tramos_Proyectados[1])
 ###########Extraccion de Imagenes#######
-extraer_imagen(file_name,54)
+#extraer_imagen(file_name,54)
