@@ -14,8 +14,10 @@ def extraer_tabla_variable(resultado,limite):
         else:   
             a.append(resultado[i])
     return(a,count)
-def extraer_imagen(file_name,num_pag):
+def extraer_imagen(file_name,nombre_arch,num_pag):
     doc= fitz.open(file_name)
+    image_path = f"./face_scrapper/face_scrapper/insightface/data/images/images{nombre_arch}"
+    os.mkdir(image_path)
     for page_index in range(num_pag,len(doc)):
  
         # get the page itself
@@ -28,6 +30,7 @@ def extraer_imagen(file_name,num_pag):
              f"[+] Found a total of {len(image_list)} images in page {page_index}")
         else:
             rint("[!] No images found on page", page_index)
+        
         for image_index, img in enumerate(page.get_images(), start=1):
  
             # get the XREF of the image
@@ -43,6 +46,8 @@ def extraer_imagen(file_name,num_pag):
             image = Image.open(io.BytesIO(image_bytes))
             # save it to local disk
             #image.save(open(f"image{page_index+1}_{image_index}.{image_ext}", "wb"))
+            
+            image.save(open(f"{image_path}/image{page_index+1}_{image_index}.{image_ext}", "wb"))
         
     return
 #enlaces=text[50]
@@ -51,6 +56,7 @@ def extraer_imagen(file_name,num_pag):
 class Datos_pagina:
     def __init__(self,i,paginas,f_list):
         self.paginas=[13,43,44,45,46,47,48,49]
+        self.nombre_arch=f_list[i]
         self.file_name="./InformesPdf/Diciembre_adelante/%s"%(f_list[i])
     
     def Ordena_Datos(self):
@@ -79,6 +85,11 @@ class Datos_pagina:
         self.Puntos_Proyectados=extraer_tabla_variable(self.datos_orden,self.Rack_proyectados[1]+3)
         self.Tramos_Proyectados=extraer_tabla_variable(self.datos_orden,self.Puntos_Proyectados[1]+3)
         print("listo")
+    def Verificar(self):
+        self.cod_coleg=self.datos_orden[53]
+        self.nombre_coleg=self.datos_orden[55]
+
+
 
 f_list = os.listdir("./InformesPdf/Diciembre_adelante")#lista de archivos en esa carpeta
 #f_list = filter(lambda f: f.endswith(('.pdf','.PDF')), f_list)#filtra la lista para que solo sean pdf}
@@ -89,9 +100,11 @@ for i in range(len(f_list)):
     resultado=Datos_pagina(i,paginas,f_list)
     resultado.Ordena_Datos()
     resultado.Tablas()
+    resultado.Verificar()
     #tramos_p=resultado.Tramos_Proyectados
     #print(tramos_p)
 
+extraer_imagen(resultado.file_name,resultado.nombre_arch, 54) 
 #resultado=Datos_pagina(file_name, paginas)
 ###########Datos de las paginas############
 #print(resultado[:9])
