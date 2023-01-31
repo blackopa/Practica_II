@@ -1,4 +1,9 @@
 numpy 
 opencv-utils
 opencv-python
-
+insightface 
+onnxruntime
+pathlib
+Pillow 
+PyMuPDF
+fitz
