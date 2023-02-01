@@ -1,4 +1,4 @@
+django
 numpy 
-opencv-utils
 opencv-python
-
+psycopg2-binary
