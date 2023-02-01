@@ -4,7 +4,8 @@
 __pycache__/
 venv/
 
-data/
+data/*
+!*/.gitkeep
 
 **/Thumbs.db
 **/thumbs.db
@@ -13,9 +14,6 @@ tmp/*
 
 log.txt*
 
-.ddata/
-
-db.sqlite3
 
 # Distribution / packaging
 .Python
