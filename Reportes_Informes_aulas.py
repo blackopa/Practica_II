@@ -14,11 +14,11 @@ def Extraer_Datos_Tablas_Rango_Variable(Datos_del_Informe,Comienzo):#Se extrae l
         else:   
             a.append(Datos_del_Informe[i])
     return(a,count)
-def Extraer_Imagenes_del_Informe(file_path,nombre_archivo,num_pag):
+def Extraer_Imagenes_del_Informe(file_path,nombre_archivo,numero_pagina):#Numero de la pagina donde comienzan las fotos
     doc= fitz.open(file_path)
     image_path = f"./face_scrapper/face_scrapper/insightface/data/images/images{nombre_archivo}"
     os.mkdir(image_path)
-    for page_index in range(num_pag,len(doc)):
+    for page_index in range(numero_pagina,len(doc)):
  
         # get the page itself
         page = doc.load_page(page_index)
@@ -50,14 +50,25 @@ def Extraer_Imagenes_del_Informe(file_path,nombre_archivo,num_pag):
             image.save(open(f"{image_path}/image{page_index+1}_{image_index}.{image_ext}", "wb"))
         
     return
+def Contador_de_Codigo_Colegio(codigo_colegio,cantidad_en_tabla_resumen,Tabla_Revisar,Nombre_Elemento):
+    count=0
+    for i in Tabla_Revisar[0]:
+        if i==codigo_colegio:
+            count+=1
+    if count==int(cantidad_en_tabla_resumen):
+        return print(f"La cantidad de {Nombre_Elemento} coincide con la tabla resumen")
+    else:
+        return print(f"La cantidad de {Nombre_Elemento} no coincide con la tabla resumen")
 #enlaces=text[50]
 #print(enlaces)
 
-class Datos_pagina:
+class Datos_Texto_Informe:
     def __init__(self,i,paginas,f_list):
-        self.paginas=[13,43,44,45,46,47,48,49]
+        self.paginas=[13,43,44,45,46,47,48,49,50]
         self.nombre_archivo=f_list[i]
         self.file_path="./InformesPdf/Diciembre_adelante/%s"%(f_list[i])
+    def __del__(self):
+        print("listo")
     
     def Ordenar_Datos(self):
         self.informe=[]
@@ -84,57 +95,40 @@ class Datos_pagina:
         self.Rack_proyectados=Extraer_Datos_Tablas_Rango_Variable(self.informe,self.Rack_existentes[1]+3)
         self.Puntos_Proyectados=Extraer_Datos_Tablas_Rango_Variable(self.informe,self.Rack_proyectados[1]+3)
         self.Tramos_Proyectados=Extraer_Datos_Tablas_Rango_Variable(self.informe,self.Puntos_Proyectados[1]+3)
-        print("listo")
-    def Verificar(self):
-        self.cod_colegio=self.informe[53]
+
+    def Verificar_Elementos_de_Red_Existentes(self):
+        self.codigo_colegio=self.informe[71]
         self.nombre_colegio=self.informe[55]
+        print(f"Codigo {self.nombre_colegio} es {self.codigo_colegio}")
+        self.cantidad_enlaces=self.Elementos_red[1]
+        self.cantidad_racks_proyectados=self.Elementos_red[3]
+        self.cantidad_puntos_proyectados=self.Elementos_red[5]
+        Contador_de_Codigo_Colegio(self.codigo_colegio,self.cantidad_enlaces,self.Enlaces_existentes,"Enlaces")
+        Contador_de_Codigo_Colegio(self.codigo_colegio,self.cantidad_racks_proyectados,self.Rack_proyectados,"Racks Proyectados")
+        Contador_de_Codigo_Colegio(self.codigo_colegio,self.cantidad_puntos_proyectados,self.Puntos_Proyectados,"Puntos Proyectados")
+        
+class Reporte:
+    def __init__(self,codigo_colegio,nombre_colegio):#agregar mas campos para el reporte
+        self.codigo_colegio=codigo_colegio
+        self.nombre_colegio=nombre_colegio
+        
 
-
-
-f_list = os.listdir("./InformesPdf/Diciembre_adelante")#lista de archivos en esa carpeta
+path="./InformesPdf/Diciembre_adelante"
+f_list = os.listdir(path)#lista de archivos en esa carpeta
 #f_list = filter(lambda f: f.endswith(('.pdf','.PDF')), f_list)#filtra la lista para que solo sean pdf}
 
 #file_path="./InformesPdf/Diciembre_adelante/%s"%(f_list[1])
 paginas=[13,43,44,45,46,47,48,49]
 for i in range(len(f_list)):
-    Datos_del_Informe=Datos_pagina(i,paginas,f_list)
-    Datos_del_Informe.Ordenar_Datos()
-    Datos_del_Informe.Informacion_de_las_Tablas()
-    Datos_del_Informe.Verificar()
-    #tramos_p=Datos_del_Informe.Tramos_Proyectados
+    print("###################################")
+    Texto_Informe=Datos_Texto_Informe(i,paginas,f_list)
+    Texto_Informe.Ordenar_Datos()
+    Texto_Informe.Informacion_de_las_Tablas()
+    Texto_Informe.Verificar_Elementos_de_Red_Existentes()
+    del Texto_Informe
+    #tramos_p=Datos_Texto_Informe.Tramos_Proyectados
     #print(tramos_p)
 
-Extraer_Imagenes_del_Informe(Datos_del_Informe.file_path,Datos_del_Informe.nombre_archivo, 54) 
-#Datos_del_Informe=Datos_pagina(file_path, paginas)
-###########Datos de las paginas############
-#print(Datos_del_Informe[:9])
-#Actividad_asesoria=Datos_del_Informe[:9]
-#print(Actividad_asesoria)
-#Elementos_red=Datos_del_Informe[12:18]
-#print(Elementos_red)
-#Tramos_canalización=Datos_del_Informe[25:46]
-#print(Tramos_canalización)
-#Cables=Datos_del_Informe[49:53]
-#print(Cables)
-###########Datos de las Tablas############
-#Enlaces_existentes=Extraer_Datos_Tablas_Rango_Variable(Datos_del_Informe,56)
-#print(Enlaces_existentes[0])
-#print(Enlaces_existentes[1])
+#Extraer_Imagenes_del_Informe(Datos_del_Informe.file_path,Datos_del_Informe.nombre_archivo, 54) 
 
-#Rack_existentes=Extraer_Datos_Tablas_Rango_Variable(Datos_del_Informe,Enlaces_existentes[1]+3)
-#print(Rack_existentes[0])
-#print(Rack_existentes[1])
-
-#Rack_proyectados=Extraer_Datos_Tablas_Rango_Variable(Datos_del_Informe,Rack_existentes[1]+3)
-#print(Rack_proyectados[0])
-#print(Rack_proyectados[1])
-
-#Puntos_Proyectados=Extraer_Datos_Tablas_Rango_Variable(Datos_del_Informe,Rack_proyectados[1]+3)
-#print(Puntos_Proyectados[0])
-#print(Puntos_Proyectados[1])
-
-#Tramos_Proyectados=Extraer_Datos_Tablas_Rango_Variable(Datos_del_Informe,Puntos_Proyectados[1]+3)
-#print(Tramos_Proyectados[0])
-#print(Tramos_Proyectados[1])
-###########Extraccion de Imagenes#######
 #Extraer_Imagenes_del_Informe(file_path,54)
