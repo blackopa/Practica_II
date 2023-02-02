@@ -56,11 +56,98 @@ def Contador_de_Codigo_Colegio(codigo_colegio,cantidad_en_tabla_resumen,Tabla_Re
         if i==codigo_colegio:
             count+=1
     if count==int(cantidad_en_tabla_resumen):
-        return print(f"La cantidad de {Nombre_Elemento} coincide con la tabla resumen")
+        return print(f"La cantidad de {Nombre_Elemento} coincide con la tabla resumen. Esta es de {cantidad_en_tabla_resumen}")
     else:
-        return print(f"La cantidad de {Nombre_Elemento} no coincide con la tabla resumen")
+        return print(f"La cantidad de {Nombre_Elemento} no coincide con la tabla resumen. En el resumen son {cantidad_en_tabla_resumen} y se contaron {count}")
+def Contador_de_Tramos_de_Canalizacion(tipo_canalizacion,cantidad_en_tabla_resumen,metros_tabla_resumen,Tabla_Revisar,Nombre_Elemento):
+    count=0
+    a=[]
+    metros=0
+
+    for i in range(len(Tabla_Revisar[0])):
+        if Tabla_Revisar[0][i]==tipo_canalizacion:
+            count+=1
+            if Tabla_Revisar[0][i-5]=="Hormigón < " or Tabla_Revisar[0][i-5]=="Hormigón > ":
+                a.append(Tabla_Revisar[0][i-6])
+            else:
+                a.append(Tabla_Revisar[0][i-5])
+    for i in a:
+        metros+=int(i)
+    if count==int(cantidad_en_tabla_resumen) and metros==int(metros_tabla_resumen):
+        return print(f"La cantidad de {Nombre_Elemento} y metros coinciden con la tabla resumen y los metros tambien. Estos son: {cantidad_en_tabla_resumen} y {metros_tabla_resumen}")
+    elif count==int(cantidad_en_tabla_resumen) and metros!=int(metros_tabla_resumen):
+        return print(f"La cantidad de {Nombre_Elemento} es correcta pero los metros no coinciden. La cantidad es: {cantidad_en_tabla_resumen}")
+    elif count!=int(cantidad_en_tabla_resumen) and metros==int(metros_tabla_resumen):
+        return print(f"La cantidad de {Nombre_Elemento} es incorrecta pero los metros coinciden. Los metros son: {metros_tabla_resumen}")
+    else:
+        return print(f"La cantidad de {Nombre_Elemento} y metros no coinciden con la tabla resumen. Segun el texto son: {count} y {metros} metros")
 #enlaces=text[50]
 #print(enlaces)
+def Generar_Tabla_Resumen_Cables_Tramos(Tramos_Proyectados,codigo_colegio):
+    a=[]
+    b=["Pasillo","Vertical","Exterior","Entretecho","Aereo","Soterrado"]
+    for i in range(len(Tramos_Proyectados[0])):
+        if Tramos_Proyectados[0][i]==codigo_colegio:
+            for v in b:
+                if v ==Tramos_Proyectados[0][i+4]:
+                    if "Hormigón < "==Tramos_Proyectados[0][i+6] or "Hormigón > "==Tramos_Proyectados[0][i+6]:
+                        a.append([Tramos_Proyectados[0][i+1],Tramos_Proyectados[0][i+8],Tramos_Proyectados[0][i+9]])
+                        break
+                    else:
+                        a.append([Tramos_Proyectados[0][i+1],Tramos_Proyectados[0][i+7],Tramos_Proyectados[0][i+8]])
+                        break
+            else:
+                if "Hormigón < "==Tramos_Proyectados[0][i+7] or "Hormigón > "==Tramos_Proyectados[0][i+7]:
+                    a.append([Tramos_Proyectados[0][i+1],Tramos_Proyectados[0][i+9],Tramos_Proyectados[0][i+10]])
+                else:
+                    a.append([Tramos_Proyectados[0][i+1],Tramos_Proyectados[0][i+8],Tramos_Proyectados[0][i+9]])
+    return a
+def Generar_Tabla_Resumen_Cables_Puntos(Puntos_Proyectados,codigo_colegio):
+    a=[]
+    b=["Tabique","Fierro","Ladrillo","Hormigón < ","Hormigón > ","Ninguna"]
+    for i in range(len(Puntos_Proyectados[0])):
+        if Puntos_Proyectados[0][i]==codigo_colegio:
+            for v in b:
+                if v ==Puntos_Proyectados[0][i+7]:
+                    if "Hormigón < "==Puntos_Proyectados[0][i+7] or "Hormigón > "==Puntos_Proyectados[0][i+7] :
+                        a.append([Puntos_Proyectados[0][i+1],Puntos_Proyectados[0][i+5],Puntos_Proyectados[0][i+6],Puntos_Proyectados[0][i+10],Puntos_Proyectados[0][i+11],Puntos_Proyectados[0][i+12]])
+                        break
+                    else:
+                        a.append([Puntos_Proyectados[0][i+1],Puntos_Proyectados[0][i+5],Puntos_Proyectados[0][i+6],Puntos_Proyectados[0][i+9],Puntos_Proyectados[0][i+10],Puntos_Proyectados[0][i+11]])
+                        break
+            else:
+                if "Hormigón < "==Puntos_Proyectados[0][i+8] or "Hormigón > "==Puntos_Proyectados[0][i+8] :
+                    
+                    a.append([Puntos_Proyectados[0][i+1],Puntos_Proyectados[0][i+6],Puntos_Proyectados[0][i+7],Puntos_Proyectados[0][i+11],Puntos_Proyectados[0][i+12],Puntos_Proyectados[0][i+13]])
+                elif Puntos_Proyectados[0][i+11]=="20cm":
+
+                    a.append([Puntos_Proyectados[0][i+1],Puntos_Proyectados[0][i+5],Puntos_Proyectados[0][i+6],Puntos_Proyectados[0][i+8],Puntos_Proyectados[0][i+9],Puntos_Proyectados[0][i+10]])
+                
+                elif Puntos_Proyectados[0][i+9]=="100 cm (+-10)":
+
+                    a.append([Puntos_Proyectados[0][i+1],Puntos_Proyectados[0][i+6],Puntos_Proyectados[0][i+7],Puntos_Proyectados[0][i+10],Puntos_Proyectados[0][i+11],Puntos_Proyectados[0][i+12]])
+                else:
+                    a.append([Puntos_Proyectados[0][i+1],Puntos_Proyectados[0][i+6],Puntos_Proyectados[0][i+7],Puntos_Proyectados[0][i+9],Puntos_Proyectados[0][i+10],Puntos_Proyectados[0][i+11]])
+    return a
+
+def Generar_Tabla_Resumen_Cables_Fibra(Rack_proyectados,codigo_colegio):
+    a=[]
+    b=["Tabique","Fierro","Ladrillo","Hormigón < ","Hormigón > ","Ninguna"]
+    for i in range(len(Rack_proyectados[0])):
+        if Rack_proyectados[0][i]==codigo_colegio:
+            for v in b: 
+                if v ==Rack_proyectados[0][i+8]:
+                    if "Hormigón < "==Rack_proyectados[0][i+8] or "Hormigón > "==Rack_proyectados[0][i+8] :   
+                        a.append([Rack_proyectados[0][i+1],Rack_proyectados[0][i+6],Rack_proyectados[0][i+7],Rack_proyectados[0][i+10],Rack_proyectados[0][i+11],Rack_proyectados[0][i+12]])
+                    else:
+                        a.append([Rack_proyectados[0][i+1],Rack_proyectados[0][i+6],Rack_proyectados[0][i+7],Rack_proyectados[0][i+9],Rack_proyectados[0][i+10],Rack_proyectados[0][i+11]])
+                else:
+                    if "Hormigón < "==Rack_proyectados[0][i+9] or "Hormigón > "==Rack_proyectados[0][i+9]:
+                        a.append([Rack_proyectados[0][i+1],Rack_proyectados[0][i+7],Rack_proyectados[0][i+8],Rack_proyectados[0][i+11],Rack_proyectados[0][i+12],Rack_proyectados[0][i+13]])
+                    else:
+                        a.append([Rack_proyectados[0][i+1],Rack_proyectados[0][i+7],Rack_proyectados[0][i+8],Rack_proyectados[0][i+10],Rack_proyectados[0][i+11],Rack_proyectados[0][i+12]])
+
+    return a
 
 class Datos_Texto_Informe:
     def __init__(self,i,paginas,f_list):
@@ -97,6 +184,7 @@ class Datos_Texto_Informe:
         self.Tramos_Proyectados=Extraer_Datos_Tablas_Rango_Variable(self.informe,self.Puntos_Proyectados[1]+3)
 
     def Verificar_Elementos_de_Red_Existentes(self):
+        print("########Elementos de Red ############")
         self.codigo_colegio=self.informe[71]
         self.nombre_colegio=self.informe[55]
         print(f"Codigo {self.nombre_colegio} es {self.codigo_colegio}")
@@ -106,7 +194,49 @@ class Datos_Texto_Informe:
         Contador_de_Codigo_Colegio(self.codigo_colegio,self.cantidad_enlaces,self.Enlaces_existentes,"Enlaces")
         Contador_de_Codigo_Colegio(self.codigo_colegio,self.cantidad_racks_proyectados,self.Rack_proyectados,"Racks Proyectados")
         Contador_de_Codigo_Colegio(self.codigo_colegio,self.cantidad_puntos_proyectados,self.Puntos_Proyectados,"Puntos Proyectados")
+    
+    def Verificar_Tramos_de_Canalizacion(self):
+        print("#######Tramos de Canalizacion#############")
+        print(f"Codigo {self.nombre_colegio} es {self.codigo_colegio}")
+        cantidad_tramos_canalizacion=[self.Tramos_canalización[1],self.Tramos_canalización[4],self.Tramos_canalización[7],self.Tramos_canalización[10],self.Tramos_canalización[13],self.Tramos_canalización[16],self.Tramos_canalización[19]]
+        nombre_canalizacion=[self.Tramos_canalización[0],self.Tramos_canalización[3],self.Tramos_canalización[6],self.Tramos_canalización[9],self.Tramos_canalización[12],self.Tramos_canalización[15],self.Tramos_canalización[18]]
+        tipo_canalizacion=["3/4\"","1\"","1 1/4\"","1 1/2\"","2\"","2 1/2\"","Escalerilla "]
+        metros_canalizacion=[self.Tramos_canalización[2],self.Tramos_canalización[5],self.Tramos_canalización[8],self.Tramos_canalización[11],self.Tramos_canalización[14],self.Tramos_canalización[17],self.Tramos_canalización[20]]
+        for i in range(len(tipo_canalizacion)):
+            Contador_de_Tramos_de_Canalizacion(tipo_canalizacion[i],cantidad_tramos_canalizacion[i],metros_canalizacion[i],self.Tramos_Proyectados,nombre_canalizacion[i])
+    def Verificar_Metros_de_Cable(self):
+        print("#######Metros de Cables#############")
+        tabla_resumen_cables_tramos=Generar_Tabla_Resumen_Cables_Tramos(self.Tramos_Proyectados,self.codigo_colegio)
+        tabla_resumen_cables_puntos=Generar_Tabla_Resumen_Cables_Puntos(self.Puntos_Proyectados,self.codigo_colegio)
+        tabla_resumen_cables_fibra=Generar_Tabla_Resumen_Cables_Fibra(self.Rack_proyectados,self.codigo_colegio)
+        #print(tabla_resumen_cables_fibra)
+        total_metros_puntos=0
+        for i in range(len(tabla_resumen_cables_puntos)):
+            revisar_total_por_punto=0
+            for v in range(len(tabla_resumen_cables_tramos)):
+                if tabla_resumen_cables_puntos[i][1]==tabla_resumen_cables_tramos[v][0]:
+                    revisar_total_por_punto+=int(tabla_resumen_cables_tramos[v][2])+int(tabla_resumen_cables_puntos[i][2])+int(tabla_resumen_cables_puntos[i][3])+int(tabla_resumen_cables_puntos[i][4])
+                    for j in range(len(tabla_resumen_cables_tramos)):    
+                        if tabla_resumen_cables_tramos[j][0]==tabla_resumen_cables_tramos[v][1]:
+                            revisar_total_por_punto+=int(tabla_resumen_cables_tramos[j][2])
+            #print(revisar_total_por_punto)
+            if revisar_total_por_punto==int(tabla_resumen_cables_puntos[i][5]):
+                print(f"{tabla_resumen_cables_puntos[i][0]} ok")
+            else: print(f"{tabla_resumen_cables_puntos[i][0]} not ok")
+        for i in range(len(tabla_resumen_cables_puntos)): total_metros_puntos+=int(tabla_resumen_cables_puntos[i][5])
         
+        for i in range(len(tabla_resumen_cables_fibra)):
+            revisar_total_por_fibra=0
+            for v in range(len(tabla_resumen_cables_fibra)):
+                #if tabla_resumen_cables_fibra[]
+                for j in range(len(tabla_resumen_cables_tramos)):    
+                        if tabla_resumen_cables_tramos[j][0]==tabla_resumen_cables_tramos[v][1]:
+                            revisar_total_por_fibra+=int(tabla_resumen_cables_tramos[j][2])
+
+        #print(total_metros_puntos)
+        
+
+
 class Reporte:
     def __init__(self,codigo_colegio,nombre_colegio):#agregar mas campos para el reporte
         self.codigo_colegio=codigo_colegio
@@ -120,11 +250,12 @@ f_list = os.listdir(path)#lista de archivos en esa carpeta
 #file_path="./InformesPdf/Diciembre_adelante/%s"%(f_list[1])
 paginas=[13,43,44,45,46,47,48,49]
 for i in range(len(f_list)):
-    print("###################################")
     Texto_Informe=Datos_Texto_Informe(i,paginas,f_list)
     Texto_Informe.Ordenar_Datos()
     Texto_Informe.Informacion_de_las_Tablas()
     Texto_Informe.Verificar_Elementos_de_Red_Existentes()
+    Texto_Informe.Verificar_Tramos_de_Canalizacion()
+    Texto_Informe.Verificar_Metros_de_Cable()
     del Texto_Informe
     #tramos_p=Datos_Texto_Informe.Tramos_Proyectados
     #print(tramos_p)
