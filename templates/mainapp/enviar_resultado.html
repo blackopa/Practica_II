@@ -1,0 +1,26 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+    <div class="row justify-content-md-center bg-light text-dark">
+        {% for line in reporte_strings %}
+            {{ line }} </br>
+        {% endfor %}
+    </div>
+    <form action="/decision" method="POST" class="row justify-content-md-center">
+        {% csrf_token %}
+        <div class="form-group row">
+            <label for="radio" class="form-label">Decisión:</label>
+            <div class="radio">
+                <label><input type="radio" name="decision">Aprobar informe</label>
+            </div>
+            <div class="radio">
+                <label><input type="radio" name="decision">Rechazar informe</label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="comment" class="form-label">Comentarios</label>
+            <textarea class="form-control" rows="5" id="comment"></textarea>
+          </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form> 
+{% endblock %}
