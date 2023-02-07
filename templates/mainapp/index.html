@@ -1,0 +1,20 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+<form action="/step1" method="POST"  enctype="multipart/form-data" class="row justify-content-md-center">
+  {% csrf_token %}
+    <div class="form-group row">
+      <label for="name">Nombre:</label>
+      <input type="text" class="form-control" id="name">
+    </div>
+    <div class="form-group row">
+      <label for="rut">Rut:</label>
+      <input type="text" class="form-control" id="rut">
+    </div>
+    <div class="form-group row">
+        <label for="formFile" class="form-label">Archivo</label>
+        <input class="form-control" type="file" name="file" id="formFile">
+      </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+  </form> 
+  {% endblock %}
