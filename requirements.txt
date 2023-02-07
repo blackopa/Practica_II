@@ -1,4 +1,13 @@
 django
 numpy 
 opencv-python
+<<<<<<< HEAD
 psycopg2-binary
+=======
+insightface 
+onnxruntime
+pathlib
+Pillow 
+PyMuPDF
+fitz
+>>>>>>> 93290de9c9d2c97ce35b12f11861a8408725710f
