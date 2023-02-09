@@ -5,6 +5,11 @@ import os
 import io
 from PIL import Image 
 from django.core.files.storage import FileSystemStorage
+import cv2
+import numpy as np
+import insightface
+from insightface.app import FaceAnalysis
+from insightface.data import get_image as ins_get_image
 
 def get_report(file):
     filename =file.name
@@ -14,11 +19,12 @@ def get_report(file):
     Texto_Informe=Datos_Texto_Informe(full_path_file)
     Texto_Informe.Ordenar_Datos()
     Texto_Informe.Informacion_de_las_Tablas()
+    
     data = []
     data.append(Texto_Informe.Verificar_Elementos_de_Red_Existentes())
     data.extend(Texto_Informe.Verificar_Tramos_de_Canalizacion())
     data.append(Texto_Informe.Verificar_Metros_de_Cable())   
-        
+    data.extend(Texto_Informe.Detectar_caras(54,filename))   
             
     
     del Texto_Informe
@@ -37,49 +43,20 @@ def Extraer_Datos_Tablas_Rango_Variable(Datos_del_Informe,Comienzo):#Se extrae l
         else:   
             a.append(Datos_del_Informe[i])
     return(a,count)
-def Extraer_Imagenes_del_Informe(file_path,nombre_archivo,numero_pagina):#Numero de la pagina donde comienzan las fotos
-    doc= fitz.open(file_path)
-    image_path = f"./face_scrapper/face_scrapper/insightface/data/images/images{nombre_archivo}"
-    os.mkdir(image_path)
-    for page_index in range(numero_pagina,len(doc)):
+def remove_img(self, path, img_name):
+    os.remove(path + '/' + img_name)
+# check if file exists or not
+    if os.path.exists(path + '/' + img_name) is false:
+        # file did not exists
+        return True
 
-        # get the page itself
-        page = doc.load_page(page_index)
-        image_list = page.get_images()
-
-        # printing number of images found in this page
-        if image_list:
-            print(
-            f"[+] Found a total of {len(image_list)} images in page {page_index}")
-        else:
-            rint("[!] No images found on page", page_index)
-
-        for image_index, img in enumerate(page.get_images(), start=1):
-
-            # get the XREF of the image
-            xref = img[0]
-
-            # extract the image bytes
-            base_image = doc.extract_image(xref)
-            image_bytes = base_image["image"]
-
-            # get the image extension
-            image_ext = base_image["ext"]
-            # load it to PIL
-            image = Image.open(io.BytesIO(image_bytes))
-            # save it to local disk
-            #image.save(open(f"image{page_index+1}_{image_index}.{image_ext}", "wb"))
-
-            image.save(open(f"{image_path}/image{page_index+1}_{image_index}.{image_ext}", "wb"))
-
-    return
 
 def Contador_de_Codigo_Colegio(codigo_colegio,cantidad_en_tabla_resumen,Tabla_Revisar,Nombre_Elemento):#Cuenta las filas de las distintas tablas dentro del informe
     count=0
     for i in Tabla_Revisar[0]:
         if i==codigo_colegio:
             count+=1
-    if count==float(cantidad_en_tabla_resumen):
+    if count==round(float(cantidad_en_tabla_resumen),1):
             return (f"Cantidad de {Nombre_Elemento} <font color=green><b>coinciden</b></font> con la tabla resumen. Esta es de <b>{cantidad_en_tabla_resumen}</b>.<br>")
     else:
         return (f"Cantidad de {Nombre_Elemento} <font color=red><b>no coinciden</b></font> con la tabla resumen. En el resumen son <b>{cantidad_en_tabla_resumen}</b> y se contaron <b>{count}</b>.<br>")
@@ -93,16 +70,16 @@ def Contador_de_Tramos_de_Canalizacion(tipo_canalizacion,cantidad_en_tabla_resum
         if Tabla_Revisar[0][i]==tipo_canalizacion:
             count+=1
             if Tabla_Revisar[0][i-5]=="Hormigón < " or Tabla_Revisar[0][i-5]=="Hormigón > ":
-                a.append(float(Tabla_Revisar[0][i-6].replace(',','.')))
+                a.append(round(float(Tabla_Revisar[0][i-6].replace(',','.')),1))
             else:
-                a.append(float(Tabla_Revisar[0][i-5].replace(',','.')))
+                a.append(round(float(Tabla_Revisar[0][i-5].replace(',','.')),1))
     for i in a:
-        metros+=float(i)
-    if count==float(cantidad_en_tabla_resumen) and metros==float(metros_tabla_resumen.replace(',','.')):
+        metros+=round(float(i),1)
+    if count==round(float(cantidad_en_tabla_resumen),1) and metros==round(float(metros_tabla_resumen.replace(',','.')),1):
         return (f"Cantidad de <b>{Nombre_Elemento}</b> y metros <font color=green><b>coinciden</b></font> con la tabla resumen y los metros tambien. Estos son: <b>{cantidad_en_tabla_resumen}</b> y <b>{metros_tabla_resumen}</b>.")
-    elif count==float(cantidad_en_tabla_resumen) and metros!=float(metros_tabla_resumen.replace(',','.')):
+    elif count==round(float(cantidad_en_tabla_resumen),1) and metros!=round(float(metros_tabla_resumen.replace(',','.')),1):
         return (f"Cantidad de <b>{Nombre_Elemento}</b> es <font color=green><b>correcta</b></font> pero los metros <font color=red><b>no coinciden</b></font>. La cantidad es: <b>{cantidad_en_tabla_resumen}</b> y metros son <b>{metros}</b>.")
-    elif count!=float(cantidad_en_tabla_resumen) and metros==float(metros_tabla_resumen.replace(',','.')):
+    elif count!=round(float(cantidad_en_tabla_resumen),1) and metros==round(float(metros_tabla_resumen.replace(',','.')),1):
         return (f"Cantidad de <b>{Nombre_Elemento}</b> es <font color=red><b>incorrecta</b></font> pero los metros <font color=green><b>coinciden</b></font>. La cantidad es: <b>{count}</b> y los metros son: <b>{metros_tabla_resumen}</b>.")
     else:
         return (f"Cantidad de <b>{Nombre_Elemento}</b> y metros <font color=red><b>no coinciden</b></font> con la tabla resumen. Segun el texto son: <b>{count}</b> y <b>{metros}</b> metros.")
@@ -192,7 +169,7 @@ def Tramos_Recursivos(tabla_resumen_cables_tramos,revisar_total,x):#Para calcula
     for j in range(len(tabla_resumen_cables_tramos)):    
         if tabla_resumen_cables_tramos[j][0]==tabla_resumen_cables_tramos[x][1]:
             revisar_total+=Tramos_Recursivos(tabla_resumen_cables_tramos,revisar_total,j)
-            revisar_total+=float(tabla_resumen_cables_tramos[j][2].replace(',','.'))
+            revisar_total+=round(float(tabla_resumen_cables_tramos[j][2].replace(',','.')),1)
 
     return revisar_total
 def Revisar_Total_de_metros(tabla_resumen,tabla_resumen_cables_tramos):#Revisa el total de metros de cable UTP-6 o Fibra
@@ -203,9 +180,9 @@ def Revisar_Total_de_metros(tabla_resumen,tabla_resumen_cables_tramos):#Revisa e
         for v in range(len(tabla_resumen_cables_tramos)):
             if tabla_resumen[i][1]==tabla_resumen_cables_tramos[v][0]:
                 revisar_total+=Tramos_Recursivos(tabla_resumen_cables_tramos,revisar_total,v)
-                revisar_total+=float(tabla_resumen_cables_tramos[v][2].replace(',','.'))+float(tabla_resumen[i][2].replace(',','.'))+float(tabla_resumen[i][3].replace(',','.'))+float(tabla_resumen[i][4].replace(',','.'))
+                revisar_total+=round(float(tabla_resumen_cables_tramos[v][2].replace(',','.')),1)+round(float(tabla_resumen[i][2].replace(',','.')),1)+round(float(tabla_resumen[i][3].replace(',','.')),1)+round(float(tabla_resumen[i][4].replace(',','.')),1)
         revisar_total_suma+=revisar_total
-        if revisar_total==float(tabla_resumen[i][5].replace(',','.')):
+        if revisar_total==round(float(tabla_resumen[i][5].replace(',','.')),1):
             estado.append(f"<b>{tabla_resumen[i][0].replace(',','.')}</b> <font color=green><b> esta bien </b></font> {revisar_total} m")
         else: estado.append(f"<b>{tabla_resumen[i][0].replace(',','.')}</b> <font color=red><b> no esta bien </b></font> {revisar_total} m")
     return (revisar_total_suma,estado)
@@ -282,7 +259,55 @@ class Datos_Texto_Informe:#Es donde se encuentra toda la data importante del inf
         #print(f"El total de UTP-6 es {total_metros_puntos} m")
         return (f"El total de fibra es <b>{total_metros_fibra[0]}</b> m.<br> Los puntos de fibra son : <br> &nbsp; &nbsp;{total_metros_fibra[1]}. <br> El total de UTP-6 es <b>{total_metros_puntos[0]}</b> m. <br>Los puntos UTP-6 son: <br> &nbsp; &nbsp;{total_metros_puntos[1]}")
 
+    def Detectar_caras(self,numero_pagina,file_name):#Numero de la pagina donde comienzan las fotos
+        doc= fitz.open(self.pathfile)
+        caras=[]
+        image_path = f"static/tmp/images{file_name}"
+        try:
+            os.mkdir(image_path)
+        except:
+            pass
+        app = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
+        app.prepare(ctx_id=0, det_size=(640, 640))
+        for page_index in range(numero_pagina,len(doc)):
 
+            # get the page itself
+            page = doc.load_page(page_index)
+            image_list = page.get_images()
+            # printing number of images found in this page
+            #if image_list:
+                #print(
+                #f"[+] Found a total of {len(image_list)} images in page {page_index}")
+            #else:
+                #print("[!] No images found on page", page_index)
+
+            for image_index, img in enumerate(page.get_images(), start=1):
+
+                # get the XREF of the image
+                xref = img[0]
+
+                # extract the image bytes
+                base_image = doc.extract_image(xref)
+                image_bytes = base_image["image"]
+
+                # get the image extension
+                image_ext = base_image["ext"]
+                # load it to PIL
+                image = Image.open(io.BytesIO(image_bytes))
+                
+                image.save(open(f"{image_path}/image{page_index+1}_{image_index}.{image_ext}", "wb"))
+                
+                #imagen = ins_get_image(f"{image_path}/image{page_index+1}_{image_index}")
+                image = cv2.imread(f"{image_path}/image{page_index+1}_{image_index}.{image_ext}")
+                image_name = f"image{page_index+1}_{image_index}"
+                faces = app.get(image)
+                
+                if len(faces) > 0: caras.append(f"Encontrada cara en <img src=\"/static/tmp/images{file_name}/image{page_index+1}_{image_index}.{image_ext}\"></img><b>{page_index+1}_{image_index}</b>")
+                # save it to local disk
+                #image.save(open(f"image{page_index+1}_{image_index}.{image_ext}", "wb"))
+                #remove_img(image_path, image_name)
+                #image.save(open(f"{image_path}/image{page_index+1}_{image_index}.{image_ext}", "wb"))
+        return caras
 
 
 

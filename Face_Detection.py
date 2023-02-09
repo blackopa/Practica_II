@@ -14,5 +14,6 @@ for i in range(len(f_list)):
     file_name=(os.path.basename(f_list[i]).split('.')[0])
     img = ins_get_image(file_name)
     faces = app.get(img)
+    #intervenir
     rimg = app.draw_on(img, faces)
     cv2.imwrite(f"./resultados/result_output{file_name}.jpg", rimg)
