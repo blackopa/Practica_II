@@ -139,4 +139,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
                 if len(faces) > 0: 
                     caras.append(f"Encontrada cara en la pagina foto <b>{page_index+1}_{image_index}</b> <img src=\"/static/tmp/images{file_name}/image{page_index+1}_{image_index}.{image_ext}\"></img>")
         return caras
-
+    
+    def datos_colegio(self):
+        datos = [self.informe[71],self.informe[55]]
+        return datos

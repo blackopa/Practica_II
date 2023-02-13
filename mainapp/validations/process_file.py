@@ -22,14 +22,17 @@ def get_report(file):
     TextoInforme = DatosTextoInforme(full_path_file)
     TextoInforme.ordenar_datos()
     TextoInforme.informacion_de_las_tablas()
-    
+    datos = TextoInforme.datos_colegio()
+    data_informe = dict()
+    data_informe["Codigo Colegio"] = datos[0]
+    data_informe["Nombre Colegio"] = datos[1]
     data = []
     data.append(TextoInforme.verificar_elementos_de_red_existentes())
     data.extend(TextoInforme.verificar_tramos_de_canalizacion())
     data.append(TextoInforme.verificar_metros_de_cable())   
     data.extend(TextoInforme.detectar_caras(54,filename))#El numero 54 representa el comienzo promedio de los informes en que se encuentran las fotos   
     del TextoInforme
-    return data
+    return data,data_informe
 
 
 
