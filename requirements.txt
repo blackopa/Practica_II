@@ -1,13 +1,23 @@
+# Web server
 django
-numpy 
-opencv-python
-<<<<<<< HEAD
+# PotsgreSQL connector
 psycopg2-binary
-=======
+
+# Math library
+numpy 
+
+# Face detection
 insightface 
 onnxruntime
+
+# I/O utility
 pathlib
+
+# Image processing
 Pillow 
+opencv-python
+
+
+# PDF processing
 PyMuPDF
 fitz
->>>>>>> 93290de9c9d2c97ce35b12f11861a8408725710f
