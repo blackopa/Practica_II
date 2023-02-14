@@ -109,7 +109,8 @@ def generar_tabla_resumen_cables_puntos(puntos_proyectados,codigo_colegio):
     resumen = []
     MATERIALIDAD = [
         "Tabique","Fierro","Ladrillo",
-        "Hormigón < ","Hormigón > ","Ninguna"
+        "Hormigón < ","Hormigón > ","Ninguna",
+        "Vidrio"
     ]
     for i in range(len(puntos_proyectados[0])):
         if puntos_proyectados[0][i] == codigo_colegio:
@@ -192,7 +193,8 @@ def generar_tabla_resumen_cables_fibra(rack_proyectados,codigo_colegio):
     MATERIALIDAD = [
         "Tabique","Fierro","Ladrillo",
         "Hormigón < ","Hormigón > ","Ninguna",
-        "Cielo (wifi)","Hormigón <","Hormigón >"
+        "Cielo (wifi)","Hormigón <","Hormigón >",
+        "Vidrio"
     ]
     for i in range(len(rack_proyectados[0])):
         if rack_proyectados[0][i] == codigo_colegio:

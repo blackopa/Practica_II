@@ -31,6 +31,7 @@ def step1(request):
             )
             persona.save()
             di = models.Informe(
+                nombre_informe = file,
                 codigo_colegio = data_informe["Codigo Colegio"],
                 nombre_colegio = data_informe["Nombre Colegio"])
             di.save()
