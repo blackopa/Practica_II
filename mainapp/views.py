@@ -51,8 +51,11 @@ def decision(request):
         comentario = request.POST.get("comentario", "")
         decision = request.POST.get("decision", "")
         if decision in ("Aprobado","Rechazado")\
-            and id_reporte is not None:
-            print(id_reporte, comentario, decision)
+                and id_reporte is not None:
+            rr = models.Report.objects.get(id=id_reporte)
+            rr.decision = decision
+            rr.comentario = comentario
+            rr.save()
         return HttpResponseRedirect("/exito")
 
 def exito(request):

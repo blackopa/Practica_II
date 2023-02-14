@@ -171,7 +171,7 @@ def generar_tabla_resumen_cables_puntos(puntos_proyectados,codigo_colegio):
                         puntos_proyectados[0][i+7],puntos_proyectados[0][i+10],
                         puntos_proyectados[0][i+11],puntos_proyectados[0][i+12]
                     ])
-                elif puntos_proyectados[0][i+8] in b :
+                elif puntos_proyectados[0][i+8] in MATERIALIDAD :
                     resumen.append([
                     puntos_proyectados[0][i+1],puntos_proyectados[0][i+6],
                     puntos_proyectados[0][i+7],puntos_proyectados[0][i+10],

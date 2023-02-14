@@ -18,6 +18,7 @@ class Report(models.Model):
     reportestr = models.CharField(max_length=20000)
     decision = models.CharField(max_length=32)
     comentario = models.CharField(max_length=255)
-    fecha = models.DateTimeField('dia revisado', auto_now_add=True)
+    fecha = models.DateTimeField(auto_now_add=True)
     rut_persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
     id_informe = models.ForeignKey(Informe, on_delete=models.CASCADE)
+    
