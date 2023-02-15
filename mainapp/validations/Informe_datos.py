@@ -3,9 +3,7 @@ from pathlib import Path
 import os
 import io
 from PIL import Image 
-from django.core.files.storage import FileSystemStorage
 import cv2
-import numpy as np
 import insightface
 from insightface.app import FaceAnalysis
 from insightface.data import get_image as ins_get_image
@@ -13,11 +11,12 @@ from .Funciones_datos import tablas_rango_variable,contador_de_codigo_colegio,co
 
 class DatosTextoInforme:#Es donde se encuentra toda la data importante del informe
     def __init__(self,file):
+        #el numero de la pagina dentro del informe que posee la información importante
         self._PAGINAS = [
             13,43,44,
             45,46,47,
             48,49,50
-        ]#el numero de la pagina dentro del informe que posee la información importante
+        ]
         self._pathfile=file
         
 
@@ -29,9 +28,11 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         doc = fitz.open(self._pathfile)
         for i in self._PAGINAS:
             numero = i-1  
-            page = doc.load_page(numero) #pagina que se quiere revisar del informe
+            #pagina que se quiere revisar del informe
+            page = doc.load_page(numero) 
             text = page.get_text("text")
-            contenido = ""#contenido dentro de la celda
+            contenido = ""
+            #contenido dentro de la celda
             for i in range(len(text)):
                 if text[i] == '\n':
                     self.informe.append(contenido)
@@ -40,22 +41,29 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
                     contenido += text[i]
 
     def informacion_de_las_tablas(self):
-        self.actividad_asesoria = self.informe[:9]#Pagina que tiene la información de asesoria
-        self.elementos_red = self.informe[12:18]#Tabla resumen de elementos de red
-        self.tramos_canalización = self.informe[25:46]#Tabla resumen de tramos de canalización
-        self.cables = self.informe[49:53]#Tabla resumen de Cables
-        self.enlaces_existentes = tablas_rango_variable(self.informe,56)#Tabla resumen de Enlaces Existentes
-        self.rack_existentes = tablas_rango_variable(self.informe,self.enlaces_existentes[1]+3)#Tabla resumen de Racks Existentes
-        self.rack_proyectados = tablas_rango_variable(self.informe,self.rack_existentes[1]+3)#Tabla resumen de Racks Proyectados
-        self.puntos_proyectados = tablas_rango_variable(self.informe,self.rack_proyectados[1]+3)#Tabla resumen de Puntos Proyectados
-        self.tramos_proyectados = tablas_rango_variable(self.informe,self.puntos_proyectados[1]+3)#Tabla resumen de Tramos Proyectados
+        #Pagina que tiene la información de asesoria
+        self.actividad_asesoria = self.informe[:9]
+        #Tabla resumen de elementos de red
+        self.elementos_red = self.informe[12:18]
+        #Tabla resumen de tramos de canalización
+        self.tramos_canalización = self.informe[25:46]
+        #Tabla resumen de Cables
+        self.cables = self.informe[49:53]
+        #Tabla resumen de Enlaces Existentes
+        self.enlaces_existentes = tablas_rango_variable(self.informe,56)
+        #Tabla resumen de Racks Existentes
+        self.rack_existentes = tablas_rango_variable(self.informe,self.enlaces_existentes[1]+3)
+        #Tabla resumen de Racks Proyectados
+        self.rack_proyectados = tablas_rango_variable(self.informe,self.rack_existentes[1]+3)
+        #Tabla resumen de Puntos Proyectados
+        self.puntos_proyectados = tablas_rango_variable(self.informe,self.rack_proyectados[1]+3)
+        #Tabla resumen de Tramos Proyectados
+        self.tramos_proyectados = tablas_rango_variable(self.informe,self.puntos_proyectados[1]+3)
 
     #Verifica si los datos de elementos de red en la tabla resumen estan correctos
     def verificar_elementos_de_red_existentes(self):
-        #print("########Elementos de Red ############")
         self.codigo_colegio = self.informe[71]
         self.nombre_colegio = self.informe[55]
-        #print(f"Codigo {self.nombre_colegio} es {self.codigo_colegio}")
         self.cantidad_enlaces = self.elementos_red[1]
         self.cantidad_racks_proyectados = self.elementos_red[3]
         self.cantidad_puntos_proyectados = self.elementos_red[5]
@@ -102,7 +110,6 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
     def verificar_metros_de_cable(self):
         tabla_resumen_cables_tramos = generar_tabla_resumen_cables_tramos(self.tramos_proyectados,self.codigo_colegio)
         tabla_resumen_cables_puntos = generar_tabla_resumen_cables_puntos(self.puntos_proyectados,self.codigo_colegio)
-        print(tabla_resumen_cables_puntos)
         tabla_resumen_cables_fibra = generar_tabla_resumen_cables_fibra(self.rack_proyectados,self.codigo_colegio)
         total_metros_fibra = revisar_total_de_metros(tabla_resumen_cables_fibra,tabla_resumen_cables_tramos)
         total_metros_puntos = revisar_total_de_metros(tabla_resumen_cables_puntos,tabla_resumen_cables_tramos)

@@ -4,6 +4,12 @@ from django.http import HttpResponseRedirect
 from .validations.process_file import get_report
 from . import models
 import hashlib
+
+# importing the necessary libraries
+from django.http import HttpResponse
+from django.views.generic import View
+from .process import html_to_pdf 
+from django.template.loader import render_to_string
 # Create your views here.
 def index(request):
     return render(request, 'mainapp/index.html')
@@ -57,8 +63,18 @@ def decision(request):
             rr.decision = decision
             rr.comentario = comentario
             rr.save()
+        #data = models.Report.objects.get(id= id_reporte)
+        #open('templates/temp.html', "w").write(render_to_string('enviar_resultado.html',{'data': data} ))
+        #pdf = html_to_pdf('temp.html')
         return HttpResponseRedirect("/exito")
 
 def exito(request):
     if request.method == "GET":
         return render(request, 'mainapp/index.html', {'resultado_anterior': 'Éxito'})
+
+
+
+
+
+
+      

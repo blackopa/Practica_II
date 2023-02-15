@@ -15,9 +15,9 @@ pathlib
 
 # Image processing
 Pillow 
-opencv-python
+opencv-python-headless
 
 
 # PDF processing
 PyMuPDF
-fitz
+xhtml2pdf

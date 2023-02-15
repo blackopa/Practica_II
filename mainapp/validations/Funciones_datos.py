@@ -1,14 +1,10 @@
-import fitz
 from pathlib import Path
 import os
 import io
 from PIL import Image 
-from django.core.files.storage import FileSystemStorage
-import cv2
-import numpy as np
-import insightface
-from insightface.app import FaceAnalysis
-from insightface.data import get_image as ins_get_image
+
+
+
 
 #Se extrae los datos de tablas que no se conoce la cantidad de filas que posee en el informe
 def tablas_rango_variable(datos_del_informe,comienzo):
@@ -37,18 +33,18 @@ def contador_de_codigo_colegio(codigo_colegio,cantidad_en_tabla_resumen,tabla_re
 #De la tabla de tramos, cuenta la cantidad de tramos que son de distintas canalizaciones
 def contador_de_tramos_de_canalizacion(tipo_canalizacion,cantidad_en_tabla_resumen,metros_tabla_resumen,tabla_revisar,nombre_elemento):
     count = 0
-    a = []
-    metros = 0
     tramos = []
+    metros = 0
     for i in range(len(tabla_revisar[0])):
         if tabla_revisar[0][i] == tipo_canalizacion:
             count += 1
             if (tabla_revisar[0][i-5] == "Hormigón < " 
                     or tabla_revisar[0][i-5] == "Hormigón > "):
-                a.append(round(float(tabla_revisar[0][i-6].replace(',','.')),1))
+                tramos.append(round(float(tabla_revisar[0][i-6].replace(',','.')),1))
             else:
-                a.append(round(float(tabla_revisar[0][i-5].replace(',','.')),1))
-    for i in a:
+                tramos.append(round(float(tabla_revisar[0][i-5].replace(',','.')),1))
+    #Para los distintos tramos, si los metros de las tablas coinciden con la tabla resumen
+    for i in tramos:
         metros += round(float(i),1)
     if (count == round(float(cantidad_en_tabla_resumen),1) 
             and metros == round(float(metros_tabla_resumen.replace(',','.')),1)):
@@ -65,7 +61,8 @@ def contador_de_tramos_de_canalizacion(tipo_canalizacion,cantidad_en_tabla_resum
 #Para facilitar la revision de las tablas, se resume la tabla en un arreglo mas pequeño.
 def generar_tabla_resumen_cables_tramos(tramos_proyectados,codigo_colegio):
     resumen = []
-    MATERIALIDAD = [#las distintas posibilidades de este campo en la tabla
+    #las distintas posibilidades de este campo en la tabla
+    MATERIALIDAD = [
         "Pasillo","Vertical","Exterior",
         "Entretecho","Aereo","Soterrado"
     ]
@@ -107,6 +104,7 @@ def generar_tabla_resumen_cables_tramos(tramos_proyectados,codigo_colegio):
 #Para facilitar la revision de las tablas, se resume la tabla en un arreglo mas pequeño.
 def generar_tabla_resumen_cables_puntos(puntos_proyectados,codigo_colegio):
     resumen = []
+    #las distintas posibilidades de este campo en la tabla
     MATERIALIDAD = [
         "Tabique","Fierro","Ladrillo",
         "Hormigón < ","Hormigón > ","Ninguna",
@@ -190,6 +188,7 @@ def generar_tabla_resumen_cables_puntos(puntos_proyectados,codigo_colegio):
 #Para facilitar la revision de las tablas, se resume la tabla en un arreglo mas pequeño.
 def generar_tabla_resumen_cables_fibra(rack_proyectados,codigo_colegio):
     resumen = []
+    #las distintas posibilidades de este campo en la tabla
     MATERIALIDAD = [
         "Tabique","Fierro","Ladrillo",
         "Hormigón < ","Hormigón > ","Ninguna",
