@@ -2,14 +2,38 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Automatización reportes</title>
+        <title>Validación Reportes</title>
         <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
         <script type="javascript" src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
+        <!-- jsPDF script -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+        <script>
+            window.jsPDF = window.jspdf.jsPDF;
+            
+            function Convert_HTML_to_PDF() {
+                var doc = new jsPDF();
+                var elementHTML = document.querySelector("contenido");
+                print(elementHTML)
+
+                doc.html(elementHTML,{
+                    callback: function(doc){
+                        doc.save('reporte.pdf');
+                    },
+                    margin: [10, 10, 10, 10],
+                    autoPaging: 'text',
+                    x: 0,
+                    y: 0,
+                    width: 190,
+                    windowWidth: 675
+                });
+            }
+        </script>
     </head>
     <body>
         <header class="page-header">
         <div class="container">
-            <h1><a href="/">Automatización reportes</a></h1>
+            <h1><a href="/">Validación Reportes</a></h1>
         </div>
         </header>
         <main class="container">

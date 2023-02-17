@@ -66,13 +66,30 @@ def decision(request):
         #data = models.Report.objects.get(id= id_reporte)
         #open('templates/temp.html', "w").write(render_to_string('enviar_resultado.html',{'data': data} ))
         #pdf = html_to_pdf('temp.html')
-        return HttpResponseRedirect("/exito")
+        return HttpResponseRedirect(f"/exito/{id_reporte}")
 
-def exito(request):
+def mostrar_resultado(request, report_id):
+    if request.method == "GET":
+        reporte = models.Report.objects.get(id=report_id)
+        persona = models.Persona.objects.get(rut=reporte.rut_persona_id)
+        informe = models.Informe.objects.get(informe_id=reporte.id_informe_id)
+        report_strings = reporte.reportestr.split("\r")
+        report_strings.append(f"La decision fue de <b>{reporte.decision}</b>")
+        report_strings.append(f"Los comentarios adjuntos:<br>&nbsp&nbsp&nbsp<b>{reporte.comentario}</b>")
+        #report_strings += reporte.fecha
+        report_strings.append(f"Fue revisado por<br>&nbsp&nbsp&nbsp Nombre: <b>{persona.nombre}</b>&nbsp;Rut: <b>{persona.rut}</b>")
+        report_strings.append(f"El documento que se reviso es: <b>{informe.nombre_informe}</b>")
+        return render(request, 'mainapp/mostrar_resultado.html', {'reporte_strings': report_strings, 'id': report_id})
+
+def mostrar_reporte(request):
+    if request.method == "POST":
+        id_reporte = request.POST.get("reporte_id",None)
+        rr = models.Report.objects.get(id=id_reporte)
+        return HttpResponseRedirect("/volver")
+
+def volver(request):
     if request.method == "GET":
         return render(request, 'mainapp/index.html', {'resultado_anterior': 'Éxito'})
-
-
 
 
 

@@ -1,0 +1,17 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+    <div class="row justify-content-md-center bg-light text-dark">
+        {% for line in reporte_strings %}
+        <ul>
+            <li><p>{{ line|safe }} </p></li>
+        </ul>
+        {% endfor %}
+    </div>
+    <form action="/mostrar_reporte" method="POST" class="row justify-content-md-center">
+        {% csrf_token %}
+        <input type="hidden" name="reporte_id" value="{{id}}">
+        <button onclick="Convert_HTML_to_PDF()" class="btn btn-default">Guardar reporte a PDF</button>
+    </form> 
+    
+{% endblock %}

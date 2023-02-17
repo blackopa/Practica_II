@@ -7,5 +7,7 @@ urlpatterns = [
     path('step1', views.step1, name='mainapp_step1'),
     path('report/<str:report_id>/', views.enviar_resultado),
     path('decision', views.decision, name='mainapp_decision'),
-    path('exito', views.exito, name='mainapp_exito')
+    path('exito/<str:report_id>/', views.mostrar_resultado),
+    path('mostrar_reporte', views.mostrar_reporte, name='mainapp_mostrar'),
+    path('volver', views.volver, name='mainapp_volver')
 ]
