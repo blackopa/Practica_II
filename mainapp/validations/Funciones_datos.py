@@ -262,3 +262,9 @@ def revisar_total_de_metros(tabla_resumen,tabla_resumen_cables_tramos):
     return (revisar_total_suma,estado)
 
 
+def string_to_int(palabra):
+        try:
+            return int(palabra)
+        except:
+            return None
+

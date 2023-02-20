@@ -18,15 +18,18 @@ def get_report(file):
     TextoInforme = DatosTextoInforme(full_path_file)
     TextoInforme.ordenar_datos()
     TextoInforme.informacion_de_las_tablas()
+    TextoInforme.ordenar_datos_planos()
     datos = TextoInforme.datos_colegio()
     data_informe = dict()
     data_informe["Codigo Colegio"] = datos[0]
     data_informe["Nombre Colegio"] = datos[1]
+    planos = TextoInforme.contar_puntos_en_plano(TextoInforme.separar_en_los_nuemros())
     #Se guarda la información importante que se mostrara
     data = []
     data.append(TextoInforme.verificar_elementos_de_red_existentes())
     data.extend(TextoInforme.verificar_tramos_de_canalizacion())
     data.append(TextoInforme.verificar_metros_de_cable()) 
+    data.append(planos)
     #El numero 54 representa el comienzo promedio de los informes en que se encuentran las fotos   
     data.extend(TextoInforme.detectar_caras(54,filename))  
     #Se borra el objeto, ya que no se necesita mas

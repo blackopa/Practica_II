@@ -7,7 +7,7 @@ import cv2
 import insightface
 from insightface.app import FaceAnalysis
 from insightface.data import get_image as ins_get_image
-from .Funciones_datos import tablas_rango_variable,contador_de_codigo_colegio,contador_de_tramos_de_canalizacion,generar_tabla_resumen_cables_tramos,generar_tabla_resumen_cables_puntos,generar_tabla_resumen_cables_fibra,tramos_recursivos,revisar_total_de_metros
+from .Funciones_datos import string_to_int,tablas_rango_variable,contador_de_codigo_colegio,contador_de_tramos_de_canalizacion,generar_tabla_resumen_cables_tramos,generar_tabla_resumen_cables_puntos,generar_tabla_resumen_cables_fibra,tramos_recursivos,revisar_total_de_metros
 
 class DatosTextoInforme:#Es donde se encuentra toda la data importante del informe
     def __init__(self,file):
@@ -26,19 +26,19 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
     def ordenar_datos(self):
         self.informe = []
         doc = fitz.open(self._pathfile)
-        for i in self._PAGINAS:
-            numero = i-1  
+        for i_pagina in self._PAGINAS:
+            numero = i_pagina-1  
             #pagina que se quiere revisar del informe
             page = doc.load_page(numero) 
             text = page.get_text("text")
             contenido = ""
             #contenido dentro de la celda
-            for i in range(len(text)):
-                if text[i] == '\n':
+            for j_linea in range(len(text)):
+                if text[j_linea] == '\n':
                     self.informe.append(contenido)
                     contenido = ""
                 else: 
-                    contenido += text[i]
+                    contenido += text[j_linea]
 
     def informacion_de_las_tablas(self):
         #Pagina que tiene la información de asesoria
@@ -151,3 +151,54 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
     def datos_colegio(self):
         datos = [self.informe[71],self.informe[55]]
         return datos
+
+    def ordenar_datos_planos(self):
+        self.planos = []
+        stop = 0
+        pagina_inicio = 50
+        doc = fitz.open(self._pathfile)
+        while True:
+            numero = pagina_inicio-1  
+            #pagina que se quiere revisar del informe
+            page = doc.load_page(numero) 
+            text = page.get_text("text")
+            contenido = ""
+            #contenido dentro de la celda
+            for i in range(len(text)):
+                if text[i] == '\n':
+                    if contenido == "FOTOS RED PROYECTADA - AULAS CONECTADAS 2022":
+                        stop = 1 
+                        break
+                    elif contenido == "DIAGRAMA LÓGICO":
+                        self.planos.clear()
+                    self.planos.append(contenido)
+                    contenido = ""
+                else: 
+                    contenido += text[i]
+            pagina_inicio += 1
+            if stop == 1: break
+
+    def separar_en_los_nuemros(self):
+        numeros = []
+        for i in self.planos:
+            a = string_to_int(i)
+            if a != None:
+                numeros.append(a)
+        print(numeros)
+        return numeros
+
+    def contar_puntos_en_plano(self,arreglo):
+        count = 0
+        n_puntos=max(arreglo)
+        size = len(arreglo)
+        repite = [0] * (n_puntos+1)
+        for i in range(0, size):
+            repite[arreglo[i]] += 1
+        
+        for i in repite:
+            if i == 0:
+                count += 1 
+        if count == 0:
+            return("Estan todos los <b><font color=green>puntos proyectados</font></b> presentes en los planos")
+        else:
+            return(f"Faltan <b><font color=red>{count} punto o puntos proyectados</font></b> en los planos")
