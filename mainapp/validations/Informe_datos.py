@@ -5,6 +5,7 @@ import io
 from PIL import Image 
 import cv2
 import insightface
+import re
 from insightface.app import FaceAnalysis
 from insightface.data import get_image as ins_get_image
 from .Funciones_datos import string_to_int,tablas_rango_variable,contador_de_codigo_colegio,contador_de_tramos_de_canalizacion,generar_tabla_resumen_cables_tramos,generar_tabla_resumen_cables_puntos,generar_tabla_resumen_cables_fibra,tramos_recursivos,revisar_total_de_metros
@@ -74,12 +75,15 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
     
     #Verifica si los datos de tramos de canalización en la tabla resumen estan correctos
     def verificar_tramos_de_canalizacion(self):
+        self.cantidad_tramos=0
         cantidad_tramos_canalizacion = [
             self.tramos_canalización[1],self.tramos_canalización[4],
             self.tramos_canalización[7],self.tramos_canalización[10],
             self.tramos_canalización[13],self.tramos_canalización[16],
             self.tramos_canalización[19]
         ]
+        for i in cantidad_tramos_canalizacion:
+            self.cantidad_tramos += int(i)
         nombre_canalizacion = [
             self.tramos_canalización[0],self.tramos_canalización[3],
             self.tramos_canalización[6],self.tramos_canalización[9],
@@ -152,11 +156,14 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         datos = [self.informe[71],self.informe[55]]
         return datos
 
+    #La función extrae de el informe el texto contenido en la sección de planos de red
     def ordenar_datos_planos(self):
         self.planos = []
         stop = 0
+        #desde esta pagina en promedio parte la sección de los planos
         pagina_inicio = 50
         doc = fitz.open(self._pathfile)
+        #se utiliza, ya que no se sabe cuantas paginas de planos habra
         while True:
             numero = pagina_inicio-1  
             #pagina que se quiere revisar del informe
@@ -166,6 +173,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
             #contenido dentro de la celda
             for i in range(len(text)):
                 if text[i] == '\n':
+                    #Esta linea representa el comienzo de la siguiente sección, osea fin de la sección de los planos
                     if contenido == "FOTOS RED PROYECTADA - AULAS CONECTADAS 2022":
                         stop = 1 
                         break
@@ -178,6 +186,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
             pagina_inicio += 1
             if stop == 1: break
 
+    #Toma el contenido extraido y solo toma los numeros
     def separar_en_los_nuemros(self):
         numeros = []
         for i in self.planos:
@@ -187,9 +196,10 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         print(numeros)
         return numeros
 
+    #Se revisan los numeros encontrados y se verfica si todos los puntos proyectados estan presentes en los planos
     def contar_puntos_en_plano(self,arreglo):
         count = 0
-        n_puntos=max(arreglo)
+        n_puntos = int(self.elementos_red[5])
         size = len(arreglo)
         repite = [0] * (n_puntos+1)
         for i in range(0, size):
@@ -199,6 +209,38 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
             if i == 0:
                 count += 1 
         if count == 0:
-            return("Estan todos los <b><font color=green>puntos proyectados</font></b> presentes en los planos")
+            return("Estan todos los <b><font color=green>Puntos Proyectados</font></b> presentes en los planos")
         else:
-            return(f"Faltan <b><font color=red>{count} punto o puntos proyectados</font></b> en los planos")
+            return(f"Faltan <b><font color=red>{count} Punto o Puntos Proyectados</font></b> en los planos")
+    
+    def separar_los_tramos(self):
+        tramos = []
+        for i in self.planos:
+            tramos += re.findall("^T[0-5][0-9]",i)
+        return tramos
+
+    def contar_tramos_en_planos(self,tramos):  
+        
+        n_tramos = self.cantidad_tramos + int(self.elementos_red[3])
+        print(n_tramos)
+        numeros = []
+        size = len(tramos)
+        repite = [0] * (n_tramos+1)
+        #Busca los tramos con el formato T01, T02..., TNN, dentro de los planos
+        for i in tramos:
+            numeros += re.findall("[0-5][0-9]",i)
+        #Convierte los tramos en numeros T01 = 1
+        for  i in range(len(numeros)):
+            numeros[i] = string_to_int(numeros[i])
+        #Counting sort
+        for i in range(0, size):
+            repite[numeros[i]] += 1
+        count = 0
+        for i in range(1,len(repite)):
+            if repite[i] == 0:
+                count += 1 
+        #Revisa si falta algun tramo
+        if count == 0:
+            return("Estan todos los <b><font color=green>Tramos proyectados</font></b> presentes en los planos")
+        else:
+            return(f"Faltan <b><font color=red>{count} Tramo o Tramos Proyectados</font></b> en los planos")

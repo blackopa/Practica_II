@@ -6,7 +6,7 @@ from django.core.files.storage import FileSystemStorage
 from .Informe_datos import DatosTextoInforme
 
 
-#Funcion que obtiene el reporte que se muestra en la pagina.
+#Funcion que obtiene el reporte que se muestra en la pagina. El reporte es un gran string con sus distintas secciones.
 def get_report(file):
     #Obtiene el archivo Pdf
     filename = file.name
@@ -23,13 +23,16 @@ def get_report(file):
     data_informe = dict()
     data_informe["Codigo Colegio"] = datos[0]
     data_informe["Nombre Colegio"] = datos[1]
-    planos = TextoInforme.contar_puntos_en_plano(TextoInforme.separar_en_los_nuemros())
+    
     #Se guarda la información importante que se mostrara
     data = []
     data.append(TextoInforme.verificar_elementos_de_red_existentes())
     data.extend(TextoInforme.verificar_tramos_de_canalizacion())
     data.append(TextoInforme.verificar_metros_de_cable()) 
+    planos = TextoInforme.contar_puntos_en_plano(TextoInforme.separar_en_los_nuemros())
+    tramos = TextoInforme.contar_tramos_en_planos(TextoInforme.separar_los_tramos())
     data.append(planos)
+    data.append(tramos)
     #El numero 54 representa el comienzo promedio de los informes en que se encuentran las fotos   
     data.extend(TextoInforme.detectar_caras(54,filename))  
     #Se borra el objeto, ya que no se necesita mas
