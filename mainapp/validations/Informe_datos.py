@@ -16,7 +16,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         self._PAGINAS = [
             13,43,44,
             45,46,47,
-            48,49,50
+            48,49,50,51
         ]
         self._pathfile=file
         
@@ -112,9 +112,11 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
     
     #Verifica si los datos de los metros de cable UTP-6 y Fibra en la tabla resumen estan correctos
     def verificar_metros_de_cable(self):
+        self.cantidad_fibra=0
         tabla_resumen_cables_tramos = generar_tabla_resumen_cables_tramos(self.tramos_proyectados,self.codigo_colegio)
         tabla_resumen_cables_puntos = generar_tabla_resumen_cables_puntos(self.puntos_proyectados,self.codigo_colegio)
         tabla_resumen_cables_fibra = generar_tabla_resumen_cables_fibra(self.rack_proyectados,self.codigo_colegio)
+        self.cantidad_fibra=len(tabla_resumen_cables_fibra)
         total_metros_fibra = revisar_total_de_metros(tabla_resumen_cables_fibra,tabla_resumen_cables_tramos)
         total_metros_puntos = revisar_total_de_metros(tabla_resumen_cables_puntos,tabla_resumen_cables_tramos)
         return (f"El total de fibra es <b>{total_metros_fibra[0]}</b> m.<br> Los puntos de fibra son : <br> &nbsp; &nbsp;{total_metros_fibra[1]}. <br> El total de UTP-6 es <b>{total_metros_puntos[0]}</b> m. <br>Los puntos UTP-6 son: <br> &nbsp; &nbsp;{total_metros_puntos[1]}")
@@ -193,7 +195,6 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
             a = string_to_int(i)
             if a != None:
                 numeros.append(a)
-        print(numeros)
         return numeros
 
     #Se revisan los numeros encontrados y se verfica si todos los puntos proyectados estan presentes en los planos
@@ -222,49 +223,53 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         return tramos
 
     def contar_tramos_en_planos(self,tramos):  
-        
-        n_tramos = self.cantidad_tramos + int(self.elementos_red[3])
-        print(n_tramos)
-        numeros = []
-        size = len(tramos)
-        repite = [0] * (n_tramos+1)
-        #Busca los tramos con el formato T01, T02..., TNN, dentro de los planos
-        for i in tramos:
-            numeros += re.findall("[0-5][0-9]",i)
-        #Convierte los tramos en numeros T01 = 1
-        for  i in range(len(numeros)):
-            numeros[i] = string_to_int(numeros[i])
-        #Counting sort
-        for i in range(0, size):
-            repite[numeros[i]] += 1
-        count = 0
-        for i in range(1,len(repite)):
-            if repite[i] == 0:
-                count += 1 
-        #Revisa si falta algun tramo
-        if count == 0:
-            return("Estan todos los <b><font color=green>Tramos proyectados</font></b> presentes en los planos")
-        else:
-            return(f"Faltan <b><font color=red>{count} Tramo o Tramos Proyectados</font></b> en los planos")
-        
+        try:
+            n_tramos = self.cantidad_tramos + self.cantidad_fibra
+            print(n_tramos)
+            numeros = []
+            size = len(tramos)
+            repite = [0] * (n_tramos+1)
+            #Busca los tramos con el formato T01, T02..., TNN, dentro de los planos
+            for i in tramos:
+                numeros += re.findall("[0-5][0-9]",i)
+            #Convierte los tramos en numeros T01 = 1
+            for  i in range(len(numeros)):
+                numeros[i] = string_to_int(numeros[i])
+            #Counting sort
+            for i in range(0, size):
+                repite[numeros[i]] += 1
+            count = 0
+            for i in range(1,len(repite)):
+                if repite[i] == 0:
+                    count += 1 
+            #Revisa si falta algun tramo
+            if count == 0:
+                return("Estan todos los <b><font color=green>Tramos proyectados</font></b> presentes en los planos")
+            else:
+                return(f"Faltan <b><font color=red>{count} Tramo o Tramos Proyectados</font></b> en los planos")
+        except:
+            return("No se pudo contar los tramos")
+
     def contar_puntos_cuadro_resumen(self):
-        encontrado_puntos = 0
-        encontrado_racks = 0
-        for i in range(2,len(self.planos)):
-            if self.planos[i] == self.informe[55]:
-                encontrado_puntos += string_to_int(self.planos[i-1])
-                encontrado_racks += string_to_int(self.planos[i-5])
-        if (round(encontrado/2) == int(self.elementos_red[5])
-                and round(encontrado_racks/2) == int(self.elementos_red[3])):
-            return ("La cantidad de puntos y racks proyectados encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b>")
-        elif (int(self.elementos_red[5]) == round(encontrado_puntos/2) 
-                and round(encontrado_racks/2) != int(self.elementos_red[3])):
-            return ("La cantidad de puntos proyectados encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b> y racks encontrados <b><font color=red>no coinciden</font></b> ")
-        elif (int(self.elementos_red[5]) != round(encontrado_puntos/2) 
-                and round(encontrado_racks/2) == int(self.elementos_red[3])):
-            return ("La cantidad de racks encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b> y los puntos encontrados <b><font color=red>no coinciden</font></b>")
-        else:
-            return ("No coinciden la cantidad de puntos y racks proyectados encontrados en los cuadros resumen de los planos")
-     
+        try:
+            encontrado_puntos = 0
+            encontrado_racks = 0
+            for i in range(2,len(self.planos)):
+                if self.planos[i] == self.planos[1]:
+                    encontrado_puntos += string_to_int(self.planos[i-1])
+                    encontrado_racks += string_to_int(self.planos[i-5])        
+            if (round(encontrado_puntos/2) == int(self.elementos_red[5])
+                    and round(encontrado_racks/2) == int(self.elementos_red[3])):
+                return ("La cantidad de puntos y racks proyectados encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b>")
+            elif (int(self.elementos_red[5]) == round(encontrado_puntos/2) 
+                    and round(encontrado_racks/2) != int(self.elementos_red[3])):
+                return ("La cantidad de puntos proyectados encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b> y racks encontrados <b><font color=red>no coinciden</font></b> ")
+            elif (int(self.elementos_red[5]) != round(encontrado_puntos/2) 
+                    and round(encontrado_racks/2) == int(self.elementos_red[3])):
+                return ("La cantidad de racks encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b> y los puntos encontrados <b><font color=red>no coinciden</font></b>")
+            else:
+                return ("No coinciden la cantidad de puntos y racks proyectados encontrados en los cuadros resumen de los planos")
+        except:
+            return ("Error en la lectura de Cuadro Resumen")
         
         
