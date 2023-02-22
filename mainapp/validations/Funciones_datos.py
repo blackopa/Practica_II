@@ -8,15 +8,15 @@ from PIL import Image
 
 #Se extrae los datos de tablas que no se conoce la cantidad de filas que posee en el informe
 def tablas_rango_variable(datos_del_informe,comienzo):
-    count = 0
+    posicion_final = 0
     a = []
     for i in range(comienzo,len(datos_del_informe)):
         if datos_del_informe[i] == datos_del_informe[53]:#El codigo de el Colegio sea el mismo
-            count = i
+            posicion_final = i
             break
         else:   
             a.append(datos_del_informe[i])
-    return(a,count)
+    return(a,posicion_final)
 
 #Cuenta las filas de las distintas tablas dentro del informe
 def contador_de_codigo_colegio(codigo_colegio,cantidad_en_tabla_resumen,tabla_revisar,nombre_elemento):

@@ -76,14 +76,16 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
     #Verifica si los datos de tramos de canalización en la tabla resumen estan correctos
     def verificar_tramos_de_canalizacion(self):
         self.cantidad_tramos=0
+        for i in self.tramos_proyectados[0]:
+            if i == self.codigo_colegio:
+                self.cantidad_tramos += 1
         cantidad_tramos_canalizacion = [
             self.tramos_canalización[1],self.tramos_canalización[4],
             self.tramos_canalización[7],self.tramos_canalización[10],
             self.tramos_canalización[13],self.tramos_canalización[16],
             self.tramos_canalización[19]
         ]
-        for i in cantidad_tramos_canalizacion:
-            self.cantidad_tramos += int(i)
+        
         nombre_canalizacion = [
             self.tramos_canalización[0],self.tramos_canalización[3],
             self.tramos_canalización[6],self.tramos_canalización[9],
@@ -112,11 +114,9 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
     
     #Verifica si los datos de los metros de cable UTP-6 y Fibra en la tabla resumen estan correctos
     def verificar_metros_de_cable(self):
-        self.cantidad_fibra=0
         tabla_resumen_cables_tramos = generar_tabla_resumen_cables_tramos(self.tramos_proyectados,self.codigo_colegio)
         tabla_resumen_cables_puntos = generar_tabla_resumen_cables_puntos(self.puntos_proyectados,self.codigo_colegio)
         tabla_resumen_cables_fibra = generar_tabla_resumen_cables_fibra(self.rack_proyectados,self.codigo_colegio)
-        self.cantidad_fibra=len(tabla_resumen_cables_fibra)
         total_metros_fibra = revisar_total_de_metros(tabla_resumen_cables_fibra,tabla_resumen_cables_tramos)
         total_metros_puntos = revisar_total_de_metros(tabla_resumen_cables_puntos,tabla_resumen_cables_tramos)
         return (f"El total de fibra es <b>{total_metros_fibra[0]}</b> m.<br> Los puntos de fibra son : <br> &nbsp; &nbsp;{total_metros_fibra[1]}. <br> El total de UTP-6 es <b>{total_metros_puntos[0]}</b> m. <br>Los puntos UTP-6 son: <br> &nbsp; &nbsp;{total_metros_puntos[1]}")
@@ -224,7 +224,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
 
     def contar_tramos_en_planos(self,tramos):  
         try:
-            n_tramos = self.cantidad_tramos + self.cantidad_fibra
+            n_tramos = self.cantidad_tramos
             print(n_tramos)
             numeros = []
             size = len(tramos)
