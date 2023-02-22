@@ -57,7 +57,7 @@ def decision(request):
         id_reporte = request.POST.get("reporte_id",None)
         comentario = request.POST.get("comentario", "")
         decision = request.POST.get("decision", "")
-        if decision in ("Aprobado","Rechazado")\
+        if decision in ("Validado","Rechazado")\
                 and id_reporte is not None:
             rr = models.Report.objects.get(id=id_reporte)
             rr.decision = decision

@@ -266,5 +266,5 @@ def string_to_int(palabra):
         try:
             return int(palabra)
         except:
-            return None
+            return 0
 

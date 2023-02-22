@@ -202,12 +202,14 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         n_puntos = int(self.elementos_red[5])
         size = len(arreglo)
         repite = [0] * (n_puntos+1)
+        #Counting sort
         for i in range(0, size):
             repite[arreglo[i]] += 1
         
-        for i in repite:
-            if i == 0:
+        for i in range(1,len(repite)):
+            if repite[i] == 0:
                 count += 1 
+        #Revisa si falta algun punto
         if count == 0:
             return("Estan todos los <b><font color=green>Puntos Proyectados</font></b> presentes en los planos")
         else:
@@ -244,3 +246,25 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
             return("Estan todos los <b><font color=green>Tramos proyectados</font></b> presentes en los planos")
         else:
             return(f"Faltan <b><font color=red>{count} Tramo o Tramos Proyectados</font></b> en los planos")
+        
+    def contar_puntos_cuadro_resumen(self):
+        encontrado_puntos = 0
+        encontrado_racks = 0
+        for i in range(2,len(self.planos)):
+            if self.planos[i] == self.informe[55]:
+                encontrado_puntos += string_to_int(self.planos[i-1])
+                encontrado_racks += string_to_int(self.planos[i-5])
+        if (round(encontrado/2) == int(self.elementos_red[5])
+                and round(encontrado_racks/2) == int(self.elementos_red[3])):
+            return ("La cantidad de puntos y racks proyectados encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b>")
+        elif (int(self.elementos_red[5]) == round(encontrado_puntos/2) 
+                and round(encontrado_racks/2) != int(self.elementos_red[3])):
+            return ("La cantidad de puntos proyectados encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b> y racks encontrados <b><font color=red>no coinciden</font></b> ")
+        elif (int(self.elementos_red[5]) != round(encontrado_puntos/2) 
+                and round(encontrado_racks/2) == int(self.elementos_red[3])):
+            return ("La cantidad de racks encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b> y los puntos encontrados <b><font color=red>no coinciden</font></b>")
+        else:
+            return ("No coinciden la cantidad de puntos y racks proyectados encontrados en los cuadros resumen de los planos")
+     
+        
+        

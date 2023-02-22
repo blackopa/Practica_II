@@ -33,6 +33,7 @@ def get_report(file):
     tramos = TextoInforme.contar_tramos_en_planos(TextoInforme.separar_los_tramos())
     data.append(planos)
     data.append(tramos)
+    data.append(TextoInforme.contar_puntos_cuadro_resumen())
     #El numero 54 representa el comienzo promedio de los informes en que se encuentran las fotos   
     data.extend(TextoInforme.detectar_caras(54,filename))  
     #Se borra el objeto, ya que no se necesita mas
