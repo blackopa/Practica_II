@@ -10,7 +10,7 @@
         {% csrf_token %}
         <input type="hidden" name="reporte_id" value="{{id}}">
         <div class="form-group row">
-            <label for="radio" class="form-label">Decisión:</label>
+            <label for="radio" class="form-label" required>Decisión: </label>
             <div class="radio">
                 <label><input type="radio" value="Validado" name="decision">Validar informe</label>
             </div>

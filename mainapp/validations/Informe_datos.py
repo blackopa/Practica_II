@@ -16,7 +16,8 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         self._PAGINAS = [
             13,43,44,
             45,46,47,
-            48,49,50,51
+            48,49,50,
+            51
         ]
         self._pathfile=file
         
@@ -71,14 +72,16 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         cant_enlaces = contador_de_codigo_colegio(self.codigo_colegio,self.cantidad_enlaces,self.enlaces_existentes,"Enlaces")
         cant_racks = contador_de_codigo_colegio(self.codigo_colegio,self.cantidad_racks_proyectados,self.rack_proyectados,"Racks Proyectados")
         cant_puntos = contador_de_codigo_colegio(self.codigo_colegio,self.cantidad_puntos_proyectados,self.puntos_proyectados,"Puntos Proyectados")
-        return (f"Nombre es <b>{self.nombre_colegio}</b> <br>Codigo <b>{self.codigo_colegio}</b>.<br>  {cant_enlaces} {cant_racks} {cant_puntos}")
+        return (f"Nombre es <b>{self.nombre_colegio}</b> <br>RBD <b>{self.codigo_colegio}</b>.<br>  {cant_enlaces} {cant_racks} {cant_puntos}<hr>")
     
     #Verifica si los datos de tramos de canalización en la tabla resumen estan correctos
     def verificar_tramos_de_canalizacion(self):
+        #Cuenta la cantidad de tramos que hay en la tabla tramos, esto incluye UTP y Fibra
         self.cantidad_tramos=0
         for i in self.tramos_proyectados[0]:
             if i == self.codigo_colegio:
                 self.cantidad_tramos += 1
+        #Cuenta la cantidad de los distintos tramos de canalizacion para UTP-6
         cantidad_tramos_canalizacion = [
             self.tramos_canalización[1],self.tramos_canalización[4],
             self.tramos_canalización[7],self.tramos_canalización[10],
@@ -103,6 +106,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
             self.tramos_canalización[14],self.tramos_canalización[17],
             self.tramos_canalización[20]
         ]
+        #Verifica si la cantidad de tramos de canalizacion contados es igual a los de la tabla resumen, para cada tipo.
         verificar = []
         for i in range(len(TIPO_CANALIZACION)):
             verificar.append(
@@ -119,7 +123,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         tabla_resumen_cables_fibra = generar_tabla_resumen_cables_fibra(self.rack_proyectados,self.codigo_colegio)
         total_metros_fibra = revisar_total_de_metros(tabla_resumen_cables_fibra,tabla_resumen_cables_tramos)
         total_metros_puntos = revisar_total_de_metros(tabla_resumen_cables_puntos,tabla_resumen_cables_tramos)
-        return (f"El total de fibra es <b>{total_metros_fibra[0]}</b> m.<br> Los puntos de fibra son : <br> &nbsp; &nbsp;{total_metros_fibra[1]}. <br> El total de UTP-6 es <b>{total_metros_puntos[0]}</b> m. <br>Los puntos UTP-6 son: <br> &nbsp; &nbsp;{total_metros_puntos[1]}")
+        return (f"El total de fibra es <b>{total_metros_fibra[0]}</b> m.<br> Los puntos de fibra son : <br> &nbsp; &nbsp;{total_metros_fibra[1]}. <br> El total de UTP-6 es <b>{total_metros_puntos[0]}</b> m. <br>Los puntos UTP-6 son: <br> &nbsp; &nbsp;{total_metros_puntos[1]}<hr>")
 
     #Detecta las caras que encuentra en las fotos que estan en el informe
     def detectar_caras(self,numero_pagina,file_name):#Numero de la pagina donde comienzan las fotos
@@ -155,6 +159,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         return caras
     
     def datos_colegio(self):
+        #RBD del colegio y el nombre de el colegio
         datos = [self.informe[71],self.informe[55]]
         return datos
 
@@ -216,6 +221,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         else:
             return(f"Faltan <b><font color=red>{count} Punto o Puntos Proyectados</font></b> en los planos")
     
+    #Toma el contenido extraido y solo toma los tramos
     def separar_los_tramos(self):
         tramos = []
         for i in self.planos:
@@ -225,7 +231,6 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
     def contar_tramos_en_planos(self,tramos):  
         try:
             n_tramos = self.cantidad_tramos
-            print(n_tramos)
             numeros = []
             size = len(tramos)
             repite = [0] * (n_tramos+1)
@@ -260,16 +265,16 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
                     encontrado_racks += string_to_int(self.planos[i-5])        
             if (round(encontrado_puntos/2) == int(self.elementos_red[5])
                     and round(encontrado_racks/2) == int(self.elementos_red[3])):
-                return ("La cantidad de puntos y racks proyectados encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b>")
+                return ("La cantidad de puntos y racks proyectados encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b><hr>")
             elif (int(self.elementos_red[5]) == round(encontrado_puntos/2) 
                     and round(encontrado_racks/2) != int(self.elementos_red[3])):
-                return ("La cantidad de puntos proyectados encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b> y racks encontrados <b><font color=red>no coinciden</font></b> ")
+                return ("La cantidad de puntos proyectados encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b> y racks encontrados <b><font color=red>no coinciden</font></b><hr>")
             elif (int(self.elementos_red[5]) != round(encontrado_puntos/2) 
                     and round(encontrado_racks/2) == int(self.elementos_red[3])):
-                return ("La cantidad de racks encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b> y los puntos encontrados <b><font color=red>no coinciden</font></b>")
+                return ("La cantidad de racks encontrados en los cuadros resumen de los planos <b><font color=green>coinciden</font></b> y los puntos encontrados <b><font color=red>no coinciden</font></b><hr>")
             else:
-                return ("No coinciden la cantidad de puntos y racks proyectados encontrados en los cuadros resumen de los planos")
+                return ("No coinciden la cantidad de puntos y racks proyectados encontrados en los cuadros resumen de los planos<hr>")
         except:
-            return ("Error en la lectura de Cuadro Resumen")
+            return ("Error en la lectura de Cuadro Resumen<hr>")
         
         

@@ -26,15 +26,20 @@ def get_report(file):
     
     #Se guarda la información importante que se mostrara
     data = []
+    data.append("<h2>Elementos de Red</h2>")
     data.append(TextoInforme.verificar_elementos_de_red_existentes())
+    data.append("<h2>Tramos de Canalización</h2>")
     data.extend(TextoInforme.verificar_tramos_de_canalizacion())
+    data.append("<hr><h2>Puntos de Fibra y cable UTP-6</h2>")
     data.append(TextoInforme.verificar_metros_de_cable()) 
     planos = TextoInforme.contar_puntos_en_plano(TextoInforme.separar_en_los_nuemros())
     tramos = TextoInforme.contar_tramos_en_planos(TextoInforme.separar_los_tramos())
+    data.append("<h2>Sección Planos</h2>")
     data.append(planos)
     data.append(tramos)
     data.append(TextoInforme.contar_puntos_cuadro_resumen())
     #El numero 54 representa el comienzo promedio de los informes en que se encuentran las fotos   
+    data.append("<h2>Caras Detectadas</h2>")
     data.extend(TextoInforme.detectar_caras(54,filename))  
     #Se borra el objeto, ya que no se necesita mas
     del TextoInforme
