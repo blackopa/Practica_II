@@ -261,7 +261,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
             encontrado_racks = 0
             for i in range(2,len(self.planos)):
                 if (self.planos[i] == self.planos[1] 
-                        or self.planos[i]==(f"{self.planos[1]}+ ANEXO")):
+                        or self.planos[i]==(f"{self.planos[1]} ANEXO")):
                     encontrado_puntos += string_to_int(self.planos[i-1])
                     encontrado_racks += string_to_int(self.planos[i-5])        
             if (round(encontrado_puntos/2) == int(self.elementos_red[5])
