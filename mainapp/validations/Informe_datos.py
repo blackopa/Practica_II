@@ -48,7 +48,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         #Tabla resumen de elementos de red
         self.elementos_red = self.informe[12:18]
         #Tabla resumen de tramos de canalización
-        self.tramos_canalización = self.informe[25:46]
+        self.tramos_canalizacion = self.informe[25:46]
         #Tabla resumen de Cables
         self.cables = self.informe[49:53]
         #Tabla resumen de Enlaces Existentes
@@ -83,17 +83,17 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
                 self.cantidad_tramos += 1
         #Cuenta la cantidad de los distintos tramos de canalizacion para UTP-6
         cantidad_tramos_canalizacion = [
-            self.tramos_canalización[1],self.tramos_canalización[4],
-            self.tramos_canalización[7],self.tramos_canalización[10],
-            self.tramos_canalización[13],self.tramos_canalización[16],
-            self.tramos_canalización[19]
+            self.tramos_canalizacion[1],self.tramos_canalizacion[4],
+            self.tramos_canalizacion[7],self.tramos_canalizacion[10],
+            self.tramos_canalizacion[13],self.tramos_canalizacion[16],
+            self.tramos_canalizacion[19]
         ]
         
         nombre_canalizacion = [
-            self.tramos_canalización[0],self.tramos_canalización[3],
-            self.tramos_canalización[6],self.tramos_canalización[9],
-            self.tramos_canalización[12],self.tramos_canalización[15],
-            self.tramos_canalización[18]
+            self.tramos_canalizacion[0],self.tramos_canalizacion[3],
+            self.tramos_canalizacion[6],self.tramos_canalizacion[9],
+            self.tramos_canalizacion[12],self.tramos_canalizacion[15],
+            self.tramos_canalizacion[18]
         ]
         TIPO_CANALIZACION = [
             "3/4\"","1\"","1 1/4\"",
@@ -101,10 +101,10 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
             "Escalerilla "
         ]
         metros_canalizacion = [
-            self.tramos_canalización[2],self.tramos_canalización[5],
-            self.tramos_canalización[8],self.tramos_canalización[11],
-            self.tramos_canalización[14],self.tramos_canalización[17],
-            self.tramos_canalización[20]
+            self.tramos_canalizacion[2],self.tramos_canalizacion[5],
+            self.tramos_canalizacion[8],self.tramos_canalizacion[11],
+            self.tramos_canalizacion[14],self.tramos_canalizacion[17],
+            self.tramos_canalizacion[20]
         ]
         #Verifica si la cantidad de tramos de canalizacion contados es igual a los de la tabla resumen, para cada tipo.
         verificar = []
@@ -260,7 +260,8 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
             encontrado_puntos = 0
             encontrado_racks = 0
             for i in range(2,len(self.planos)):
-                if self.planos[i] == self.planos[1]:
+                if (self.planos[i] == self.planos[1] 
+                        or self.planos[i]==(f"{self.planos[1]}+ ANEXO")):
                     encontrado_puntos += string_to_int(self.planos[i-1])
                     encontrado_racks += string_to_int(self.planos[i-5])        
             if (round(encontrado_puntos/2) == int(self.elementos_red[5])

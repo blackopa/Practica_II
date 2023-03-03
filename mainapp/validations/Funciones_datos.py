@@ -50,7 +50,7 @@ def contador_de_tramos_de_canalizacion(tipo_canalizacion,cantidad_en_tabla_resum
         metros += round(float(i),1)
     if (count == round(float(cantidad_en_tabla_resumen),1) 
             and metros == round(float(metros_tabla_resumen.replace(',','.')),1)):
-        return (f"Cantidad de <b>{nombre_elemento}</b> y metros <font color=green><b>coinciden</b></font> con la tabla resumen y los metros tambien. Estos son: <b>{cantidad_en_tabla_resumen}</b> y <b>{metros_tabla_resumen}</b>.")
+        return (f"Cantidad de <b>{nombre_elemento}</b> y metros <font color=green><b>coinciden</b></font> con la tabla resumen. Estos son: <b>{cantidad_en_tabla_resumen}</b> y <b>{metros_tabla_resumen}</b>.")
     elif (count == round(float(cantidad_en_tabla_resumen),1) 
             and metros != round(float(metros_tabla_resumen.replace(',','.')),1)):
         return (f"Cantidad de <b>{nombre_elemento}</b> es <font color=green><b>correcta</b></font> pero los metros <font color=red><b>no coinciden</b></font>. La cantidad es: <b>{cantidad_en_tabla_resumen}</b> y metros son <b>{metros}</b>.")
@@ -64,13 +64,13 @@ def contador_de_tramos_de_canalizacion(tipo_canalizacion,cantidad_en_tabla_resum
 def generar_tabla_resumen_cables_tramos(tramos_proyectados,codigo_colegio):
     resumen = []
     #las distintas posibilidades de este campo en la tabla
-    MATERIALIDAD = [
+    TIPOCANALIZACION = [
         "Pasillo","Vertical","Exterior",
         "Entretecho","Aereo","Soterrado"
     ]
     for i in range(len(tramos_proyectados[0])):
         if tramos_proyectados[0][i] == codigo_colegio:
-            for v in MATERIALIDAD:
+            for v in TIPOCANALIZACION:
                 if v == tramos_proyectados[0][i+4]:
                     if ("Hormigón < "== tramos_proyectados[0][i+6] 
                             or "Hormigón > "== tramos_proyectados[0][i+6]):
