@@ -41,8 +41,11 @@ def contador_de_tramos_de_canalizacion(tipo_canalizacion,cantidad_en_tabla_resum
             if (tabla_revisar[0][i-5] == "Hormigón < " 
                     or tabla_revisar[0][i-5] == "Hormigón > "):
                 tramos.append(round(float(tabla_revisar[0][i-6].replace(',','.')),1))
-            elif (tabla_revisar[0][i+1]== "20cm"):
-                tramos.append(round(float(tabla_revisar[0][i-4].replace(',','.')),1))
+            try:
+                if (tabla_revisar[0][i+1]== "20cm"):
+                    tramos.append(round(float(tabla_revisar[0][i-4].replace(',','.')),1))
+            except:
+                tramos.append(round(float(tabla_revisar[0][i-5].replace(',','.')),1))
             else:
                 tramos.append(round(float(tabla_revisar[0][i-5].replace(',','.')),1))
     #Para los distintos tramos, si los metros de las tablas coinciden con la tabla resumen
@@ -262,7 +265,7 @@ def revisar_total_de_metros(tabla_resumen,tabla_resumen_cables_tramos):
         if revisar_total == round(float(tabla_resumen[i][5].replace(',','.')),1):
             if (revisar_total + 2.1 + 0.9 > 90 
                     and revisar_total + 2.1 + 0.9 <= 100):
-                estado.append(f"<b>{tabla_resumen[i][0].replace(',','.')}</b> <font color=yellow><b> esta bien </b></font> {revisar_total} m")
+                estado.append(f"<b>{tabla_resumen[i][0].replace(',','.')}</b> <font color=blue><b> esta bien </b></font> {revisar_total} m")
             elif (revisar_total + 2.1 + 0.9 > 100):
                 estado.append(f"<b>{tabla_resumen[i][0].replace(',','.')}</b> <font color=orange><b> esta bien </b></font> {revisar_total} m")
             else: 
