@@ -17,7 +17,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
             13,43,44,
             45,46,47,
             48,49,50,
-            51
+            51,52,53
         ]
         self._pathfile=file
         
@@ -198,8 +198,9 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
         numeros = []
         for i in self.planos:
             a = string_to_int(i)
-            if a != None:
+            if a != 0:
                 numeros.append(a)
+        
         return numeros
 
     #Se revisan los numeros encontrados y se verfica si todos los puntos proyectados estan presentes en los planos

@@ -79,7 +79,7 @@ def mostrar_resultado(request, report_id):
         #report_strings += reporte.fecha
         report_strings.append(f"Fue revisado por<br>&nbsp&nbsp&nbsp Nombre: <b>{persona.nombre}</b>&nbsp;Rut: <b>{persona.rut}</b>")
         report_strings.append(f"El documento que se reviso es: <b>{informe.nombre_informe}</b>")
-        return render(request, 'mainapp/mostrar_resultado.html', {'reporte_strings': report_strings, 'id': report_id})
+        return render(request, 'mainapp/mostrar_resultado.html', {'reporte_strings': report_strings, 'id': report_id, 'RBD':informe.codigo_colegio})
 
 def mostrar_reporte(request):
     if request.method == "POST":

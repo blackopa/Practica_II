@@ -36,18 +36,23 @@ def contador_de_tramos_de_canalizacion(tipo_canalizacion,cantidad_en_tabla_resum
     tramos = []
     metros = 0
     for i in range(len(tabla_revisar[0])):
+        
         if tabla_revisar[0][i] == tipo_canalizacion:
             count += 1
-            if (tabla_revisar[0][i-5] == "Hormigón < " 
-                    or tabla_revisar[0][i-5] == "Hormigón > "):
-                tramos.append(round(float(tabla_revisar[0][i-6].replace(',','.')),1))
             try:
-                if (tabla_revisar[0][i+1]== "20cm"):
+                if (tabla_revisar[0][i-5] == "Hormigón < " 
+                        or tabla_revisar[0][i-5] == "Hormigón > "):
+                    tramos.append(round(float(tabla_revisar[0][i-6].replace(',','.')),1))
+                    
+                elif (tabla_revisar[0][i+1]== "20cm"):
                     tramos.append(round(float(tabla_revisar[0][i-4].replace(',','.')),1))
+                    
+                else:
+                    tramos.append(round(float(tabla_revisar[0][i-5].replace(',','.')),1))
+                    
             except:
-                tramos.append(round(float(tabla_revisar[0][i-5].replace(',','.')),1))
-            else:
-                tramos.append(round(float(tabla_revisar[0][i-5].replace(',','.')),1))
+                print("Error provocado por el formato en la sección de tramos")
+            
     #Para los distintos tramos, si los metros de las tablas coinciden con la tabla resumen
     for i in tramos:
         metros += round(float(i),1)
@@ -262,10 +267,11 @@ def revisar_total_de_metros(tabla_resumen,tabla_resumen_cables_tramos):
                     round(float(tabla_resumen[i][4].replace(',','.')),1)
                 )
         revisar_total_suma += revisar_total
-        if revisar_total == round(float(tabla_resumen[i][5].replace(',','.')),1):
+        if (revisar_total == round(float(tabla_resumen[i][5].replace(',','.')),1) 
+                or abs(revisar_total - round(float(tabla_resumen[i][5].replace(',','.')),1))  < 0.01) :
             if (revisar_total + 2.1 + 0.9 > 90 
                     and revisar_total + 2.1 + 0.9 <= 100):
-                estado.append(f"<b>{tabla_resumen[i][0].replace(',','.')}</b> <font color=blue><b> esta bien </b></font> {revisar_total} m")
+                estado.append(f"<b>{tabla_resumen[i][0].replace(',','.')}</b> <font color=blue><b> esta bien (al limite de la norma)</b></font> {revisar_total} m")
             elif (revisar_total + 2.1 + 0.9 > 100):
                 estado.append(f"<b>{tabla_resumen[i][0].replace(',','.')}</b> <font color=orange><b> esta bien </b></font> {revisar_total} m")
             else: 
