@@ -160,7 +160,7 @@ class DatosTextoInforme:#Es donde se encuentra toda la data importante del infor
     
     def datos_colegio(self):
         #RBD del colegio y el nombre de el colegio
-        datos = [self.informe[71],self.informe[55]]
+        datos = [self.informe[71],self.informe[55],self.elementos_red[5]]
         return datos
 
     #La función extrae de el informe el texto contenido en la sección de planos de red

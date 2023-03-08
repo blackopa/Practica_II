@@ -2,6 +2,7 @@
 from pathlib import Path
 import os
 import io
+import csv
 from django.core.files.storage import FileSystemStorage
 from .Informe_datos import DatosTextoInforme
 
@@ -34,7 +35,7 @@ def get_report(file):
     data_informe = dict()
     data_informe["Codigo Colegio"] = datos[0]
     data_informe["Nombre Colegio"] = datos[1]
-    
+    data_informe["Puntos Proyectados"] = datos[2]  
     #Se guarda la información importante que se mostrara
     data = []
     data.append("<h2>Elementos de Red</h2>")
@@ -42,6 +43,14 @@ def get_report(file):
         data.append(TextoInforme.verificar_elementos_de_red_existentes())
     except:
         data.append("Error en lectura de Elementos de Red, revíselo manualmente")
+    with open('static/rbd-puntos.csv', newline='') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=';', quotechar=';')
+        for row in spamreader:
+            if row[0] == datos[0]:
+                if datos[2] >= row[1]:
+                    data.append("La cantidad de puntos proyectados es mayor o igual a los notificados<hr>")
+                else:
+                    data.append("La cantidad de puntos proyectados es menor a los notificados<hr>")
     data.append("<h2>Tramos de Canalización</h2>")
     try:
         data.extend(TextoInforme.verificar_tramos_de_canalizacion())
