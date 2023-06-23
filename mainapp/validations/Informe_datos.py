@@ -11,14 +11,9 @@ from insightface.data import get_image as ins_get_image
 from .Funciones_datos import string_to_int,tablas_rango_variable,contador_de_codigo_colegio,contador_de_tramos_de_canalizacion,generar_tabla_resumen_cables_tramos,generar_tabla_resumen_cables_puntos,generar_tabla_resumen_cables_fibra,tramos_recursivos,revisar_total_de_metros
 
 class DatosTextoInforme:#Es donde se encuentra toda la data importante del informe
-    def __init__(self,file):
+    def __init__(self,file, paginas):
         #el numero de la pagina dentro del informe que posee la información importante
-        self._PAGINAS = [
-            13,43,44,
-            45,46,47,
-            48,49,50,
-            51,52,53
-        ]
+        self._PAGINAS = paginas
         self._pathfile=file
         
 

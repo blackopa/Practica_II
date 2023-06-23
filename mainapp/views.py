@@ -25,8 +25,10 @@ def step1(request):
         file = request.FILES.get("file", None)
         rut_persona = request.POST.get("rut", "")
         nombre_persona = request.POST.get("nombre", "")
+        paginas = request.POST.get("paginas", "13,43,44,45,46,47,48,49,50,51,52,53")
+        paginas = [int(x) for x in paginas.split(",")]
         if file is not None:
-            report_strings, data_informe= get_report(file)
+            report_strings, data_informe= get_report(file, paginas)
             rs = ""
             for r in report_strings:
                 rs += r + "\r"
