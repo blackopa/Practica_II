@@ -1,6 +1,6 @@
 mkdir data
-mkdir static/tmp
+mkdir static\tmp
 docker build -f Dockerfile -t automatizationpdf:latest .
 REM docker run --name db -d --env-file .env -v "%cd%/data:/var/lib/postgresql/data" -p 5432:5432 postgres:14.1-alpine
 REM sleep 20
-docker run -it --rm -w /usr/src/app/ -p 80:8080 automatizationpdf:latest
+docker run --name eva -it --rm -w /usr/src/app/ -p 80:8080 automatizationpdf:latest

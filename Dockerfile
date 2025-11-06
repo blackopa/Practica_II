@@ -13,4 +13,6 @@ COPY . .
 
 RUN chmod +x ./entrypoint.sh
 
+RUN python3 ./get_model.py
+
 CMD [ "sh", "entrypoint.sh" ]

@@ -8,7 +8,7 @@ from .Informe_datos import DatosTextoInforme
 
 
 #Funcion que obtiene el reporte que se muestra en la pagina. El reporte es un gran string con sus distintas secciones.
-def get_report(file):
+def get_report(file, paginas):
     #Obtiene el archivo Pdf
     filename = file.name
     full_path_file = os.path.join('tmp', filename)
@@ -17,7 +17,7 @@ def get_report(file):
     fs.save(filename, file)
     #Se revisa el informe, esto funciona para informes con el formato actualizado
     try:
-        TextoInforme = DatosTextoInforme(full_path_file)
+        TextoInforme = DatosTextoInforme(full_path_file, paginas)
     except:
         data.append("Error en la lectura, asegure que el archivo pdf sea el correcto")
     try:
